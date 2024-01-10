@@ -1,7 +1,10 @@
 const OpenAI = require("openai");
-require("dotenv").config();
+const dotenv = require("dotenv");
 
-const apiKey = process.env.OPENAI_API_KEY; // Make sure this is set in your environment variables
-const openai = new OpenAI(apiKey);
+// Load environment variables from .env file
+dotenv.config();
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY, // Ensure this environment variable is set
+});
 
 module.exports = openai;

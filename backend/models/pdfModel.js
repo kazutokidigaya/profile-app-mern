@@ -1,18 +1,11 @@
-// PdfModel.js
 const mongoose = require("mongoose");
 
-const PdfSchema = new mongoose.Schema({
-  user_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-  file_name: {
-    type: String,
-  },
-  file_bytes: {
-    type: Buffer, // or String, depending on how you store the actual PDF data
-  },
-  // Add other properties or modify according to how you want to store PDFs
+const pdfSchema = new mongoose.Schema({
+  fileName: { type: String, required: true },
+  fileData: { type: Buffer, required: true },
+  created_at: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("Pdf", PdfSchema);
+const PdfModel = mongoose.model("Pdf", pdfSchema);
+
+module.exports = PdfModel;

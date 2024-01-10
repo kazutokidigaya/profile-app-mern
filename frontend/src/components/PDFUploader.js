@@ -2,55 +2,87 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 
 const PDFUploader = () => {
-  const [file, setFile] = useState(null);
+  const [uploadedPdfId, setUploadedPdfId] = useState(null);
   const [openAIResponse, setOpenAIResponse] = useState(null);
   const fileInputRef = useRef(null);
 
-  // Handles file upload and analysis
-  const handleFileUpload = async () => {
-    if (file) {
-      const formData = new FormData();
-      formData.append("file", file);
-      try {
-        // Upload PDF
-        const uploadResponse = await axios.post(
-          "http://localhost:3000/api/pdfs/upload",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+  // Handles file upload
+  const handleFileUpload = async (selectedFile) => {
+    const formData = new FormData();
+    formData.append("file", selectedFile);
 
-        // Get the PDF ID
-        const pdfId = uploadResponse.data.pdfId;
+    try {
+      // Upload PDF and process with OpenAI in one step
+      const uploadResponse = await axios.post(
+        "http://localhost:3000/api/pdfs/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-        // Process PDF
-        const processResponse = await axios.get(
-          `http://localhost:3000/api/pdfs/process/${pdfId}`
-        );
-        setOpenAIResponse(processResponse.data.openaiResponse);
-      } catch (error) {
-        console.error("Error uploading file:", error);
-      }
+      setUploadedPdfId(uploadResponse.data.pdfId); // Store the uploaded PDF ID
+      setOpenAIResponse(uploadResponse.data.openaiResponses); // Assuming the backend sends an array of OpenAI responses
+    } catch (error) {
+      console.error("Error uploading file:", error);
     }
   };
 
   // Handle file selection
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-    console.log(e.target.value);
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      handleFileUpload(selectedFile);
+    }
   };
 
-  // Trigger hidden file input when "Upload and Analyze" is clicked
+  // Trigger hidden file input when button is clicked
   const handleButtonClick = () => {
     fileInputRef.current.click();
-    fileInputRef.current.onchange = () => {
-      if (fileInputRef.current.files[0]) {
-        handleFileUpload();
+  };
+
+  // Function to download the uploaded PDF
+  const downloadPdf = async () => {
+    if (uploadedPdfId) {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/pdfs/download/${uploadedPdfId}`,
+          {
+            responseType: "blob",
+          }
+        );
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "downloaded.pdf"); // Set the file name
+        document.body.appendChild(link);
+        link.click();
+      } catch (error) {
+        console.error("Error downloading file:", error);
       }
-    };
+    }
+  };
+
+  const downloadAIResponsePdf = async () => {
+    if (openAIResponse) {
+      try {
+        const response = await axios.post(
+          `http://localhost:3000/api/pdfs/generate-pdf`,
+          { responses: openAIResponse },
+          { responseType: "blob" }
+        );
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "ai_responses.pdf");
+        document.body.appendChild(link);
+        link.click();
+      } catch (error) {
+        console.error("Error downloading AI response PDF:", error);
+      }
+    }
   };
 
   return (
@@ -60,15 +92,25 @@ const PDFUploader = () => {
         ref={fileInputRef}
         onChange={handleFileChange}
         accept="application/pdf"
-        style={{ display: "none" }} // Hide the file input
+        style={{ display: "none" }}
       />
-      <button onClick={handleButtonClick}>Upload and Analyze</button>
-      {openAIResponse && (
-        <div>
-          <h3>OpenAI Response:</h3>
-          <p>{JSON.stringify(openAIResponse, null, 2)}</p>
-        </div>
+      <button onClick={handleButtonClick}>Upload PDF</button>
+      {uploadedPdfId && (
+        <button onClick={downloadPdf}>Download Uploaded PDF</button>
       )}
+      {openAIResponse && (
+        <button onClick={downloadAIResponsePdf}>
+          Download AI Response as PDF
+        </button>
+      )}
+      {openAIResponse &&
+        openAIResponse.map((response, index) => (
+          <div>
+            <div key={index}>
+              <p>{response}</p>
+            </div>
+          </div>
+        ))}
     </div>
   );
 };
