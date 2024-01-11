@@ -52,27 +52,27 @@ async function processPdfWithOpenAI(pdfText) {
 
       // Collect the AI's response from the chat
       const aiResponse = chatCompletion.choices[0].message.content;
-      console.log(aiResponse);
       responses.push(aiResponse);
     } catch (error) {
       console.error("Error with OpenAI API:", error);
       throw new Error("Failed to get response from OpenAI");
     }
   }
-  console.log(responses);
+
   return responses;
 }
 
 // Upload or retrieve PDF
-
 async function uploadOrRetrievePdf(req, res) {
   try {
     const { originalname, buffer } = req.file;
     const fileHash = calculateFileHash(buffer);
 
+    // Check if a PDF with the same hash already exists
     let pdf = await PdfModel.findOne({ fileHash });
 
     if (!pdf) {
+      // If the PDF does not exist, create a new entry
       pdf = new PdfModel({
         fileName: originalname,
         fileData: buffer,
