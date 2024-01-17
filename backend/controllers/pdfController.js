@@ -6,8 +6,8 @@ const { PDFDocument, rgb } = require("pdf-lib");
 const fetch = require("node-fetch");
 
 const prompts = [
-  "act like an expert mba admissions consultant. evaluate this resume. look at the total number of years of experience and advice the applicant on how mba ready they are. for instance, someone with 0 to 2 years of experience might not have the best chance cracking a top mba program but might be able to get into a b-school in your own country. provide very specific advice based on the user's years of experience.  can you give a response not as a third party but be a human and gives response in not more than 250 words please and don't mention this text",
-  "act like an mba admissions expert. check the education background, career experience, projects, skills and keywords mentioned in the resume. based on what you find, provide a summary of the applicant's journey so far. follow this up with suggestions on what kind of mba programs would work for them. after this, they need to know about the top 3 possible career paths they can get into post-mba along with some details about the same.can you give a response not as a third party but be a human and gives response in not more than 250 words please and don't mention this text",
+  "act like an expert mba admissions consultant. evaluate this resume. look at the total number of years of experience and advice the applicant on how mba ready they are. for instance, someone with 0 to 2 years of experience might not have the best chance cracking a top mba program but might be able to get into a b-school in your own country. provide very specific advice based on the user's years of experience and make sure to give the answer in not more than 110 word.",
+  "check the education background, career experience, projects, skills and keywords mentioned in the resume. based on what you find, provide a summary of the applicant's journey so far. follow this up with suggestions on what kind of mba programs would work for them. after this, they need to know about the top 3 possible career paths they can get into post-mba along with some details about the same and make sure to give the answer in not more than 110 word.",
 ];
 
 // Function to calculate hash of the file for uniqueness
@@ -42,7 +42,7 @@ async function processPdfWithOpenAI(pdfText) {
       const chatCompletion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         messages: messages,
-        max_tokens: 300,
+        max_tokens: 250,
       });
 
       // Collect the AI's response from the chat

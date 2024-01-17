@@ -3,8 +3,6 @@ import axios from "axios";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import toast, { Toaster } from "react-hot-toast";
-import { ThreeCircles } from "react-loader-spinner";
-import "./pdfuploader.css";
 
 const PDFUploader = () => {
   const [uploadedPdfId, setUploadedPdfId] = useState(null);
@@ -26,7 +24,10 @@ const PDFUploader = () => {
     medium: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [statusMessage, setStatusMessage] = useState("");
   const fileInputRef = useRef(null);
+  const analysisSectionRef = useRef(null);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
@@ -105,30 +106,60 @@ const PDFUploader = () => {
 
   // Handles file upload
   const handleFileUpload = async (selectedFile) => {
+    setAttempts(true);
+    setOtpPending(false);
+    setOtpVerified(false);
+    setShowOTPForm(false);
+    setOpenAIResponse(null);
+    setUserData({
+      name: "",
+      email: "",
+      mobile: "",
+      otp: "",
+    });
+    analysisSectionRef.current.scrollIntoView({ behavior: "smooth" });
+
     const formData = new FormData();
     formData.append("file", selectedFile);
+    setProgress(40);
     setIsLoading(true);
+    setStatusMessage("Uploading PDF...");
+
     try {
       // Upload PDF and process with OpenAI in one step
       const uploadResponse = await axios.post(
         "http://localhost:3000/api/pdfs/upload",
         formData,
         {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { "Content-Type": "multipart/form-data" },
         }
       );
 
-      setUploadedPdfId(uploadResponse.data.pdfId); // Store the uploaded PDF ID
-      setOpenAIResponse(uploadResponse.data.openaiResponses); // Assuming the backend sends an array of OpenAI responses
-      setShowOTPForm(!showOTPForm);
-      toast.success("File uploaded successfully!");
+      // Assuming the file upload is done here
+      setProgress(40); // Set progress to 40% after file upload
+      setStatusMessage("Uploading PDF...");
+
+      // Wait for 2 seconds before simulating the AI processing
+      setTimeout(() => {
+        setProgress(80); // Set progress to 80% to simulate AI processing
+        setStatusMessage("Processing with AI...");
+
+        // Simulate the completion of AI processing after 2 more seconds
+        setTimeout(() => {
+          setUploadedPdfId(uploadResponse.data.pdfId); // Store the uploaded PDF ID
+          setOpenAIResponse(uploadResponse.data.openaiResponses); // Assuming the backend sends an array of OpenAI responses
+          setShowOTPForm(true);
+          toast.success("Response generated successfully!");
+          setStatusMessage("Done!");
+          setIsLoading(false); // Set loading to false when everything is done
+        }, 2000);
+      }, 2000);
     } catch (error) {
       console.error("Error uploading file:", error);
       toast.error("Error Uploading File");
+      setIsLoading(false); // Set loading to false in case of error
+      setStatusMessage("Failed to upload and process PDF.");
     }
-    setIsLoading(false);
   };
 
   // Handle file selection
@@ -179,6 +210,13 @@ const PDFUploader = () => {
     if (files.length) {
       handleFileUpload(files[0]);
     }
+  };
+
+  const getLimitedWords = (text, limit = 80) => {
+    const words = text.split(" ");
+    return (
+      words.slice(0, limit).join(" ") + (words.length > limit ? "..." : "")
+    );
   };
 
   // Function to download the uploaded PDF
@@ -367,98 +405,152 @@ const PDFUploader = () => {
       </div>
       <hr class="custom-hr" />
 
-      <div className="main_container">
-        <div className="analysis-section">
-          <h2 className="section-title">Resume Analysis</h2>
-          <Toaster position="top-right" />
-          <div className="upload-section">
-            <div
-              className="drag-drop-box"
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              onClick={handleButtonClick}
-            >
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                accept="application/pdf"
-                style={{ display: "none" }}
-              />
-              <img
-                src="https://lh3.googleusercontent.com/QqIro2iF868BmqZARB7u_JvZ_CR9JDOzQhdsDCngPsBOuXYlEj6_1-fnq4FPOyBs0mQbFJQdz_sXPKfIGOkSpmDCYPiRY7XF3p8=s0"
-                alt="Upload Icon"
-                width={80}
-                className="upload-icon"
-              />
-              <p>Drag and drop, or click to upload</p>
-            </div>
+      <div ref={analysisSectionRef} className="analysis-section">
+        <h2 className="section-title">Resume Analysis</h2>
+        <Toaster position="top-right" />
+        <div className="upload-section">
+          <div
+            className="drag-drop-box"
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            onClick={handleButtonClick}
+          >
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="application/pdf"
+              style={{ display: "none" }}
+            />
+            <img
+              src="https://lh3.googleusercontent.com/QqIro2iF868BmqZARB7u_JvZ_CR9JDOzQhdsDCngPsBOuXYlEj6_1-fnq4FPOyBs0mQbFJQdz_sXPKfIGOkSpmDCYPiRY7XF3p8=s0"
+              alt="Upload Icon"
+              width={80}
+              className="upload-icon"
+            />
+            <p>Drag and drop, or click to upload</p>
+          </div>
 
-            {openAIResponse &&
-              openAIResponse.map((response, index) => (
-                <div>
-                  <div key={index}>
-                    <p>{response}</p>
-                  </div>
-                </div>
-              ))}
-            {attempts && showOTPForm && (
-              <div className="pop-up-form">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Name"
-                  onChange={handleUserDataChange}
-                />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  onChange={handleUserDataChange}
-                />
+          {openAIResponse && openAIResponse.length > 0 && (
+            <div>
+              <div className="ai-response-box">
+                <p>{getLimitedWords(openAIResponse[0])}</p>
+              </div>
+              <p>If you wish to know more, please register the form.</p>
+            </div>
+          )}
+
+          {attempts && showOTPForm && (
+            <div className="form-main">
+              <input
+                className="form-input"
+                type="text"
+                name="name"
+                placeholder="Name"
+                onChange={handleUserDataChange}
+              />
+              <input
+                className="form-input"
+                type="email"
+                name="email"
+                placeholder="Email"
+                onChange={handleUserDataChange}
+              />
+              <div className="form-phone-row">
                 <PhoneInput
                   country={"in"}
                   value={userData.mobile}
                   onChange={handleMobileChange}
                 />
+                <button
+                  className="otp-button"
+                  onClick={handleSendOTP}
+                  disabled={otpVerified}
+                >
+                  Send OTP
+                </button>
+              </div>
+              <div className="form-verify-row">
                 <input
+                  className="otp-input"
                   type="text"
                   name="otp"
                   placeholder="OTP"
                   onChange={handleUserDataChange}
                 />
-                <button onClick={handleSendOTP} disabled={otpVerified}>
-                  Send OTP
-                </button>
-                <button onClick={handleVerifyOTP} disabled={otpVerified}>
+                <button
+                  className="otp-button"
+                  onClick={handleVerifyOTP}
+                  disabled={otpVerified}
+                >
                   Verify OTP
                 </button>
-                {otpVerified && <div>OTP Verified Successfully</div>}
-                {otpPending && <div>please enter correct otp</div>}
               </div>
-            )}
-            {attempts && otpVerified && (
-              <button onClick={downloadAIResponsePdf}>
-                Download AI Response as PDF
+              {otpVerified && (
+                <div className="status-message success">
+                  OTP Verified Successfully
+                </div>
+              )}
+              {otpPending && (
+                <div className="status-message error">
+                  Please enter correct OTP
+                </div>
+              )}
+            </div>
+          )}
+
+          {attempts && otpVerified && (
+            <div className="download-button-container">
+              <button className="upload-button" onClick={downloadAIResponsePdf}>
+                Download Response
               </button>
-            )}
-            {!attempts && <p>You have used your max allocated usage.</p>}
-          </div>
+            </div>
+          )}
+          {!attempts && (
+            <p className="usage-message">
+              You have used your max allocated usage.
+            </p>
+          )}
+
           {isLoading && (
-            <ThreeCircles
-              color="#00BFFF"
-              height={100}
-              width={100}
-              // other props you may need
-            />
+            <div className="progress-bar-container">
+              <div
+                className="progress-bar"
+                style={{ width: `${progress}%` }}
+              ></div>
+              <p>{statusMessage}</p>
+            </div>
           )}
         </div>
-        <div>
-          <h2></h2>
-          <p></p>
-          <button></button>
-        </div>
       </div>
+      <hr className="custom-hr" />
+      <div className="insights-section">
+        <h2>Ready to Turn Insights into Action?</h2>
+        <p>
+          Completing your profile evaluation is just the beginning. Connect with
+          a career advisor to understand your analysis and map out your
+          personalized path to a management program. They're ready to help you
+          strategize and answer any questions
+        </p>
+        <button className="upload-button">Schedule My Free Call</button>
+      </div>
+      <footer>
+        <div className="footerbar">
+          <img
+            src="https://lh3.googleusercontent.com/4MwUs0FiiSAX_d8ORJWpmp-xn1ifvguLFtr-x7vu_Km6CvmXUzE_pmbRW90uLOiPwbEneFAeXaJ-8gwtT2nAdVLsSYIsod2MrD8=s0"
+            alt="Logo"
+            className="navbar-logo"
+          />
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="application/pdf"
+            style={{ display: "none" }}
+          />
+          <p>All Copyrights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 };
