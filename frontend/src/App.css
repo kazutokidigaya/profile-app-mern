@@ -1,0 +1,258 @@
+nav {
+  width: 100%;
+  background-color: #f1f7ff;
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 35px 60px;
+}
+
+.navbar-logo {
+  height: 50px;
+}
+
+.upload-button:hover {
+  border: 1px solid #0029e4;
+  background: white;
+  color: #0029e4;
+}
+
+.navbar,
+.profile-evaluation-section,
+.management-journey-section,
+.how-to-use-section {
+  width: 75%; /* Sets width to 75% for these sections */
+  margin: auto; /* Centers the content */
+}
+.profile-evaluation-section {
+  padding: 35px 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 75%;
+  margin: auto;
+  text-align: left;
+  flex-wrap: wrap; /* Ensures responsiveness */
+}
+
+.text-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.text-container h1 {
+  margin-top: 0;
+  margin-bottom: 20px; /* 20px padding below the heading */
+}
+
+.text-container p {
+  margin-top: 0;
+  margin-bottom: 20px; /* 20px padding below the paragraph */
+}
+
+.upload-button {
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #0029e4; /* Adjust the color as needed */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  max-width: 250px;
+  margin: 35px 10px 10px 0px;
+}
+
+.image-container {
+  flex: 0.6;
+  padding: 20px;
+  min-height: 300px; /* Adjust based on your text container's approximate height */
+}
+
+.image-container img {
+  width: 100%;
+  height: auto;
+  max-height: 100%; /* Keep image height within the container */
+}
+
+.management-journey-section {
+  background-color: #f1f7ff;
+  padding: 35px 0px;
+  text-align: center;
+  width: 100%;
+}
+
+.management-journey-section .management-text {
+  width: 75%;
+  margin: auto; /* Centers the section */
+}
+
+.how-to-use-section {
+  width: 75%;
+  margin: auto;
+  text-align: center;
+  padding: 35px 60px;
+}
+
+.how-to-use-section h2 {
+  margin: 20px 0px 40px 0px;
+}
+
+.analysis-section {
+  padding: 20px 0px;
+  text-align: center; /* Center the content */
+  width: 75%;
+  margin: auto; /* Centers the section */
+}
+
+.section-title {
+  padding: 0px 0px 20px 0px;
+}
+
+.drag-drop-box {
+  /* ...existing styles... */
+  padding: 10px;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: center;
+}
+
+.drag-drop-box img {
+  padding-top: 30px;
+}
+.upload-icon {
+  margin-bottom: 10px; /* Adjust as needed /
+width: 50px; / Adjust as needed */
+  height: auto;
+}
+
+.upload-button {
+  /* ...existing styles... */
+  margin-top: 20px;
+}
+
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 25px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  border-radius: 15px;
+}
+
+.card h3,
+.card p {
+  text-align: left;
+  line-height: 20px;
+}
+
+.card h3 {
+  margin-bottom: 15px;
+}
+
+.custom-hr {
+  height: 1px;
+  background-color: lightgray; /* Light gray color */
+  border: none; /* Removes default border */
+  width: 75%; /* 75% of the parent element's width */
+  margin: 20px auto; /* 20px top and bottom margin, auto centers it horizontally */
+}
+
+.section-title {
+  text-align: center;
+  width: 75%;
+  margin: 20px auto;
+}
+
+.upload-section {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 75%;
+  margin: auto;
+}
+
+.drag-drop-box {
+  border: 2px dashed lightgray;
+  padding: 20px;
+  width: 60%; /* Adjust as needed */
+  text-align: center;
+  cursor: pointer;
+  height: auto;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.pop-up-form {
+  display: "flex";
+  flexdirection: "column";
+  maxwidth: "300px";
+  margin: "auto";
+}
+
+.pop-up-form input {
+  marginbottom: "10px";
+  padding: "10px";
+  fontsize: "16px";
+}
+
+.pop-up-form button {
+  padding: "10px 20px";
+  fontsize: "16px";
+  cursor: "pointer";
+  marginbottom: "10px";
+}
+
+@media (max-width: 768px) {
+  .cards-container {
+    flex-direction: column;
+  }
+}
+@media (max-width: 1300px) {
+  .drag-drop-box {
+    width: auto;
+  }
+}
+
+@media (max-width: 1200px) {
+  .image-container {
+    min-height: 200px; /* Adjust for smaller screens */
+  }
+}
+
+@media (max-width: 800px) {
+  .image-container {
+    display: none; /* Hide image on very small screens */
+  }
+  .card img {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-evaluation-section {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .navbar-logo {
+    margin-bottom: 20px;
+  }
+}
