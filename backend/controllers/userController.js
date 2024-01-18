@@ -192,3 +192,21 @@ exports.getAllUsers = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+exports.getUserDataForAdmin = async (req, res) => {
+  try {
+    const userDetails = await User.aggregate([
+      {
+        $lookup: {
+          from: "pdfs", // the collection to join
+          localField: "_id", // field from the input documents
+          foreignField: "userId", // field from the documents of the "from" collection
+          as: "pdfDetails", // output array field
+        },
+      },
+    ]);
+    res.json(userDetails);
+  } catch (error) {
+    res.status(500).send(`Error: ${error.message}`);
+  }
+};
