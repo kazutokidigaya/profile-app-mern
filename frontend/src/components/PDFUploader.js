@@ -135,6 +135,7 @@ const PDFUploader = () => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
+      console.log({ uploadResponse: uploadResponse });
 
       // Assuming the file upload is done here
       setProgress(40); // Set progress to 40% after file upload
@@ -157,7 +158,7 @@ const PDFUploader = () => {
       }, 2000);
     } catch (error) {
       console.error("Error uploading file:", error);
-      toast.error("Error Uploading File");
+      toast.error(error.response.data.message);
       setIsLoading(false); // Set loading to false in case of error
       setStatusMessage("Failed to upload and process PDF.");
     }

@@ -360,3 +360,85 @@ async function generatePdfFromResponse(req, res) {
     res.status(500).send("Error generating PDF");
   }
 }
+
+async function generatePdfFromResponse(req, res) {
+  try {
+    const { responses, name } = req.body;
+
+    if (!Array.isArray(responses) || typeof name !== "string") {
+      throw new Error(
+        "Invalid input: responses should be an array and name should be a string."
+      );
+    }
+
+    const doc = new PDFDocument({ margin: 50 });
+    const stream = res.writeHead(200, {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="openai_response_${Date.now()}.pdf"`,
+    });
+
+    // Fetch and Embed the image
+    const headerImageUrl =
+      "https://lh3.googleusercontent.com/4MwUs0FiiSAX_d8ORJWpmp-xn1ifvguLFtr-x7vu_Km6CvmXUzE_pmbRW90uLOiPwbEneFAeXaJ-8gwtT2nAdVLsSYIsod2MrD8=s0";
+    const headerImageBuffer = await fetch(headerImageUrl).then((res) =>
+      res.buffer()
+    );
+    const headerImage = doc.openImage(headerImageBuffer);
+
+    // Function to add border and image to any page
+    const addBorderAndImage = (doc) => {
+      doc
+        .rect(10, 10, doc.page.width - 20, doc.page.height - 20)
+        .stroke("#0029e4");
+      doc.image(
+        headerImage,
+        doc.page.width - headerImage.width / 2 - 20,
+        doc.page.height - headerImage.height / 2 - 20,
+        { width: headerImage.width / 2 }
+      );
+    };
+
+    // Add a title page with "Profile Analysis Report for [name]"
+    doc.fontSize(38).text(`Profile Analysis Report For ${name}`, 50, 220, {
+      align: "center",
+    });
+    addBorderAndImage(doc); // Add border and image to the title page
+    doc.addPage(); // Start a new page for the responses
+
+    responses.forEach((response, index) => {
+      // Ensure border and image for each new response page
+      addBorderAndImage(doc);
+
+      // Draw the text
+      const textWidth = doc.page.width - 2 * 50;
+      doc
+        .fontSize(17)
+        .fillColor("black")
+        .text(response, 50, 50, {
+          align: "justify",
+          width: textWidth,
+          continued: index !== responses.length - 1,
+        });
+
+      if (index !== responses.length - 1) {
+        doc.addPage(); // Start a new page for the next response
+      }
+    });
+
+    // Add a thank you page
+    doc.addPage();
+    addBorderAndImage(doc); // Add border and image to the thank you page
+    doc.fontSize(38).text("Thank You!", 50, 220, {
+      align: "center",
+    });
+
+    // Finalize the PDF and end the stream
+    doc.pipe(stream);
+    doc.end();
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    if (!res.headersSent) {
+      res.status(500).send("Error generating PDF");
+    }
+  }
+}
