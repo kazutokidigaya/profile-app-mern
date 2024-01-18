@@ -71,6 +71,7 @@ const PDFUploader = () => {
       if (response.data.verification === "approved") {
         setOtpPending(false);
         setOtpVerified(true);
+        setShowOTPForm(false);
         await registerUser();
         toast.success("OTP verified successfully!");
       }
@@ -241,11 +242,11 @@ const PDFUploader = () => {
   //   }
   // };
 
-  {
-    /* {uploadedPdfId && (
-    <button onClick={downloadPdf}>Download Uploaded PDF</button>
-  )} */
-  }
+  // {
+  //   /* {uploadedPdfId && (
+  //   <button onClick={downloadPdf}>Download Uploaded PDF</button>
+  // )} */
+  // }
 
   return (
     <div className="mian_container">
@@ -436,7 +437,9 @@ const PDFUploader = () => {
               <div className="ai-response-box">
                 <p>{getLimitedWords(openAIResponse[0])}</p>
               </div>
-              <p>If you wish to know more, please register the form.</p>
+              {showOTPForm && (
+                <p>If you wish to know more, please register the form.</p>
+              )}
             </div>
           )}
 
@@ -456,21 +459,23 @@ const PDFUploader = () => {
                 placeholder="Email"
                 onChange={handleUserDataChange}
               />
-              <div className="form-phone-row">
+              <div className="form-row">
                 <PhoneInput
                   country={"in"}
                   value={userData.mobile}
                   onChange={handleMobileChange}
+                  containerClass="phone-container"
+                  inputClass="phone-input"
                 />
                 <button
-                  className="otp-button"
+                  className="otp-button send-otp"
                   onClick={handleSendOTP}
                   disabled={otpVerified}
                 >
                   Send OTP
                 </button>
               </div>
-              <div className="form-verify-row">
+              <div className="form-row">
                 <input
                   className="otp-input"
                   type="text"
@@ -479,7 +484,7 @@ const PDFUploader = () => {
                   onChange={handleUserDataChange}
                 />
                 <button
-                  className="otp-button"
+                  className="otp-button verify-otp"
                   onClick={handleVerifyOTP}
                   disabled={otpVerified}
                 >

@@ -13,12 +13,12 @@ body {
 
 h1 {
   font-size: 38px;
-  font-weight: bolder;
+  font-weight: 500 !important;
 }
 
 h2 {
   font-size: 25px;
-  font-weight: bolder;
+  font-weight: 900;
 }
 
 h3 {
@@ -29,4 +29,5 @@ h3 {
 p {
   font-size: 17px;
   line-height: 30px;
+  color: #2c3539;
 }

@@ -32,7 +32,6 @@ footer {
 
 .navbar,
 .footerbar,
-.profile-evaluation-section,
 .management-journey-section,
 .how-to-use-section,
 .insights-section {
@@ -44,8 +43,8 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 75%;
-  margin: auto;
+  width: 60%; /* Sets width to 60% for these sections */
+  margin: auto; /* Centers the content */
   text-align: left;
   flex-wrap: wrap; /* Ensures responsiveness */
 }
@@ -89,6 +88,8 @@ footer {
   width: 100%;
   height: auto;
   max-height: 100%; /* Keep image height within the container */
+  border-radius: 20px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 
 .management-journey-section {
@@ -99,12 +100,12 @@ footer {
 }
 
 .management-journey-section .management-text {
-  width: 75%;
+  width: 60%;
   margin: auto; /* Centers the section */
 }
 
 .how-to-use-section {
-  width: 75%;
+  width: 60%;
   margin: auto;
   text-align: center;
   padding: 35px 60px;
@@ -123,15 +124,6 @@ footer {
 
 .section-title {
   padding: 0px 0px 20px 0px;
-}
-
-.drag-drop-box {
-  /* ...existing styles... */
-  padding: 10px;
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-  justify-content: center;
 }
 
 .drag-drop-box img {
@@ -193,6 +185,11 @@ width: 50px; / Adjust as needed */
 }
 
 .drag-drop-box {
+  min-height: 250px;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: center;
   border: 2px dashed lightgray;
   padding: 20px;
   width: 60%; /* Adjust as needed */
@@ -228,61 +225,77 @@ width: 50px; / Adjust as needed */
   border-radius: 5px; /* Optional: if you want rounded corners */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: for a subtle shadow */
 }
-
 .form-main {
-  background-color: lightseagreen;
+  background-color: white;
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 30px;
   border-radius: 10px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  margin: 20px;
+  width: 60%; /* Adjust the width as needed */
+  align-items: center;
 }
 
-input.form-input {
-  border: none;
+.form-input {
+  width: calc(100% - 20px); /* Adjust the width to consider padding */
   padding: 10px;
-  margin: 10px;
+  margin-bottom: 10px;
   border-radius: 5px;
+  border: 1px solid lightgray;
 }
 
-.form-phone-row {
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.phone-container {
+  flex-grow: 1;
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
+  margin-right: 10px;
 }
 
-.form-verify-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
+.phone-input {
+  width: 100%;
 }
 
-input.otp-input {
-  padding: 8px;
+.otp-input {
+  flex-grow: 1;
+  padding: 10px;
   border-radius: 5px;
-  border: none;
-  width: 65%;
-  margin: 8px;
+  border: 1px solid lightgray;
+  margin-right: 10px;
 }
 
-button.otp-button {
-  padding: 8px;
+.otp-button {
+  padding: 10px 20px;
   border: none;
   border-radius: 5px;
-  margin: 8px;
   cursor: pointer;
+  background-color: #4caf50;
+  color: white;
+  min-width: 120px; /* Set a minimum width to prevent text wrapping */
+  white-space: nowrap; /* This prevents the text from wrapping */
+  overflow: hidden; /* Ensures that text doesn't overflow */
+  text-overflow: ellipsis;
+}
+.otp-button :hover {
+  background-color: white;
+  color: #4caf50;
+  border: 1px solid #4caf50;
 }
 
-.react-tel-input {
-  width: auto;
-}
 .status-message {
+  width: 100%;
   padding: 10px;
   border-radius: 5px;
   color: white;
   text-align: center;
-  margin-top: 10px;
 }
 
 .status-message.success {
@@ -291,6 +304,10 @@ button.otp-button {
 
 .status-message.error {
   background-color: red;
+}
+
+.react-tel-input .form-control {
+  width: 100% !important;
 }
 
 .download-button-container {
@@ -308,7 +325,7 @@ button.otp-button {
 }
 
 .insights-section p {
-  text-align: left;
+  text-align: center;
   width: 60%;
   margin: auto;
 }
@@ -345,7 +362,8 @@ button.otp-button {
   .image-container {
     display: none; /* Hide image on very small screens */
   }
-  .card img {
+  .card img,
+  .navbar button {
     display: none;
   }
 }
@@ -365,5 +383,41 @@ button.otp-button {
 
   .navbar-logo {
     margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 780px) {
+  .otp-button {
+    width: auto; /* Adjust the width as needed */
+    max-width: 150px; /* Prevent the button from taking full width */
+    margin-top: 8px; /* Add margin-top to the Send OTP button */
+    margin-bottom: 8px; /* Ensure space below the button */
+    margin-right: auto; /* Center the button */
+    margin-left: auto; /* Center the button */
+  }
+  /* .react-tel-input .form-control {
+    width: 94% !important;
+  } */
+  .phone-container {
+    margin-right: 0;
+    margin-bottom: 8px;
+  }
+  .form-phone-row .otp-button,
+  .form-verify-row .otp-button {
+    margin-top: 8px; /* Add space above the Send OTP button */
+  }
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+  }
+
+  .phone-input,
+  .otp-input,
+  .otp-button {
+    width: 94%;
+    margin-right: 0;
+    margin-bottom: 10px;
   }
 }
