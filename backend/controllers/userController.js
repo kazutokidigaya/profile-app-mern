@@ -20,9 +20,9 @@ const { getISTDate } = require("../utils/getISTDate");
 exports.sendOTP = async (req, res) => {
   const { mobile } = req.body;
   const formattedMobile = `+${mobile}`; // Adjust according to your needs
-  console.log(formattedMobile);
+
   try {
-    const verification = await twilioClient.verify.v2
+    const verification = await twilioClient.verify
       .services(verifySid)
       .verifications.create({ to: formattedMobile, channel: "sms" });
     res
@@ -39,7 +39,7 @@ exports.verifyOTP = async (req, res) => {
   const formattedMobile = `+${mobile}`; // Adjust according to your needs
 
   try {
-    const verificationCheck = await twilioClient.verify.v2
+    const verificationCheck = await twilioClient.verify
       .services(verifySid)
       .verificationChecks.create({ to: formattedMobile, code });
     res.status(200).json({
@@ -162,7 +162,7 @@ exports.registerUser = async (req, res) => {
       campaign,
     });
     const leadId = leadResponse.Message.RelatedId;
-    console.log(leadResponse);
+
     // Update PDF with userId if pdfId is provided
     if (pdfId) {
       const pdf = await PdfModel.findById(pdfId);
