@@ -245,7 +245,10 @@ const PDFUploader = () => {
         </nav>
         <div className="profile-evaluation-section">
           <div className="text-container">
-            <h1>Evaluate Your Fitment for a Management Program</h1>
+            <h1>
+              Evaluate Your Fitment for a{" "}
+              <span className="blue-color-text">Management Program</span>
+            </h1>
             <p>
               Use our Profile Evaluation Tool to assess your readiness for
               management programs. Simply upload your resume or CV, and our tool
@@ -291,8 +294,8 @@ const PDFUploader = () => {
 
         <div className="how-to-use-section">
           <h2>
-            How to Use this Tool to Evaluate Your Profile and Plan Your Next
-            Steps
+            How to Use this Tool to Evaluate Your Profile and{" "}
+            <span className="blue-color-text">Plan Your Next Steps</span>
           </h2>
           <div className="cards-container">
             <div className="card">
@@ -380,7 +383,9 @@ const PDFUploader = () => {
       <hr class="custom-hr" />
 
       <div ref={analysisSectionRef} className="analysis-section">
-        <h2 className="section-title">Resume Analysis</h2>
+        <h2 className="section-title">
+          Resume <span className="blue-color-text">Analysis</span>
+        </h2>
         <Toaster position="top-right" />
         <div className="upload-section">
           <div
@@ -503,7 +508,10 @@ const PDFUploader = () => {
       </div>
       <hr className="custom-hr" />
       <div className="insights-section">
-        <h2>Ready to Turn Insights into Action?</h2>
+        <h2>
+          Ready to Turn{" "}
+          <span className="blue-color-text">Insights into Action?</span>
+        </h2>
         <p>
           Completing your profile evaluation is just the beginning. Connect with
           a career advisor to understand your analysis and map out your

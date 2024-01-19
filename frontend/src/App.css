@@ -314,6 +314,9 @@ width: 50px; / Adjust as needed */
   display: flex;
   justify-content: center; /* Centers the button horizontally */
 }
+.blue-color-text {
+  color: #0029e4;
+}
 
 .usage-message {
   text-align: center;
