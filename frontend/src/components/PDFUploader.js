@@ -38,7 +38,6 @@ const PDFUploader = () => {
     });
   }, []);
 
-  console.log(param);
   const handleUserDataChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
@@ -53,7 +52,6 @@ const PDFUploader = () => {
         "http://localhost:3000/api/users/send-otp",
         { mobile: userData.mobile }
       );
-      console.log("OTP sent response:", response.data, userData.mobile);
       toast.success("OTP sent successfully!");
     } catch (error) {
       console.error("Error sending OTP:", error);
@@ -67,7 +65,6 @@ const PDFUploader = () => {
         "http://localhost:3000/api/users/verify-otp",
         { mobile: userData.mobile, code: userData.otp }
       );
-      console.log(response);
       if (response.data.verification === "approved") {
         setOtpPending(false);
         setOtpVerified(true);
@@ -135,7 +132,6 @@ const PDFUploader = () => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      console.log({ uploadResponse: uploadResponse });
 
       // Assuming the file upload is done here
       setProgress(40); // Set progress to 40% after file upload
