@@ -48,10 +48,9 @@ const PDFUploader = () => {
 
   const handleSendOTP = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/users/send-otp",
-        { mobile: userData.mobile }
-      );
+      await axios.post("http://localhost:3000/api/users/send-otp", {
+        mobile: userData.mobile,
+      });
       toast.success("OTP sent successfully!");
     } catch (error) {
       console.error("Error sending OTP:", error);

@@ -448,3 +448,22 @@ width: 50px; / Adjust as needed */
     width: 90%;
   }
 }
+
+@media (max-width: 281px) {
+  h1 {
+    font-size: 28px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  .upload-button,
+  p {
+    font-size: 15px;
+  }
+}
