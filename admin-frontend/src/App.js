@@ -30,8 +30,6 @@ const AdminPanel = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    console.log("Env Username:", process.env.REACT_APP_USERNAME);
-    console.log("Env Password:", process.env.REACT_APP_PASSWORD);
 
     const { username, password } = credentials;
 
@@ -67,8 +65,6 @@ const AdminPanel = () => {
       console.error("Error downloading file:", error);
     }
   };
-
-  console.log({ userDetails });
 
   // Format date or return placeholder
   const formatDate = (date) => {
