@@ -48,9 +48,12 @@ const PDFUploader = () => {
 
   const handleSendOTP = async () => {
     try {
-      await axios.post("http://localhost:3000/api/users/send-otp", {
-        mobile: userData.mobile,
-      });
+      await axios.post(
+        " https://profile-app-server-sihf.onrender.com/api/users/send-otp",
+        {
+          mobile: userData.mobile,
+        }
+      );
       toast.success("OTP sent successfully!");
     } catch (error) {
       console.error("Error sending OTP:", error);
@@ -61,7 +64,7 @@ const PDFUploader = () => {
   const handleVerifyOTP = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/users/verify-otp",
+        " https://profile-app-server-sihf.onrender.com/api/users/verify-otp",
         { mobile: userData.mobile, code: userData.otp }
       );
       if (response.data.verification === "approved") {
@@ -84,7 +87,7 @@ const PDFUploader = () => {
   const registerUser = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/users/register",
+        " https://profile-app-server-sihf.onrender.com/api/users/register",
         {
           name: userData.name,
           email: userData.email,
@@ -125,7 +128,7 @@ const PDFUploader = () => {
     try {
       // Upload PDF and process with OpenAI in one step
       const uploadResponse = await axios.post(
-        "http://localhost:3000/api/pdfs/upload",
+        " https://profile-app-server-sihf.onrender.com/api/pdfs/upload",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -176,7 +179,7 @@ const PDFUploader = () => {
     if (openAIResponse) {
       try {
         const response = await axios.post(
-          `http://localhost:3000/api/pdfs/generate-pdf`,
+          ` https://profile-app-server-sihf.onrender.com/api/pdfs/generate-pdf`,
           {
             responses: openAIResponse,
             name: userData.name,

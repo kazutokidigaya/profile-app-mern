@@ -366,6 +366,34 @@ width: 50px; / Adjust as needed */
   }
 }
 
+@media (max-width: 850px) {
+  .how-to-use-section,
+  .profile-evaluation-section {
+    width: 70%;
+  }
+
+  .management-journey-section .management-text {
+    width: 75%;
+  }
+
+  .how-to-use-section {
+    width: 72%;
+  }
+
+  .analysis-section,
+  .insights-section p {
+    width: 100%;
+  }
+
+  .form-main {
+    width: 80%;
+  }
+
+  .ai-response-box {
+    width: 90%;
+  }
+}
+
 @media (max-width: 780px) {
   .otp-button {
     width: auto; /* Adjust the width as needed */
@@ -418,34 +446,6 @@ width: 50px; / Adjust as needed */
   }
   .cards-container {
     flex-direction: column;
-  }
-}
-
-@media (max-width: 850px) {
-  .how-to-use-section,
-  .profile-evaluation-section {
-    width: 70%;
-  }
-
-  .management-journey-section .management-text {
-    width: 75%;
-  }
-
-  .how-to-use-section {
-    width: 72%;
-  }
-
-  .analysis-section,
-  .insights-section p {
-    width: 100%;
-  }
-
-  .form-main {
-    width: 80%;
-  }
-
-  .ai-response-box {
-    width: 90%;
   }
 }
 
