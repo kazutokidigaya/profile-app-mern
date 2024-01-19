@@ -376,7 +376,7 @@ const PDFUploader = () => {
           </div>
         </div>
       </div>
-      <hr class="custom-hr" />
+      <hr className="custom-hr" />
 
       <div ref={analysisSectionRef} className="analysis-section">
         <h2 className="section-title">
