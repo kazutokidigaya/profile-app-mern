@@ -192,7 +192,7 @@ width: 50px; / Adjust as needed */
   justify-content: center;
   border: 2px dashed lightgray;
   padding: 20px;
-  width: 60%; /* Adjust as needed */
+  width: 70%; /* Adjust as needed */
   text-align: center;
   cursor: pointer;
   height: auto;
@@ -335,20 +335,10 @@ width: 50px; / Adjust as needed */
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
-  .download-button-container {
-    flex-direction: column;
-  }
-}
 
-@media (max-width: 768px) {
-  .cards-container {
-    flex-direction: column;
-  }
-}
 @media (max-width: 1300px) {
   .drag-drop-box {
-    width: auto;
+    width: 75%;
   }
 }
 
@@ -358,31 +348,13 @@ width: 50px; / Adjust as needed */
   }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 1025px) {
   .image-container {
     display: none; /* Hide image on very small screens */
   }
   .card img,
   .navbar button {
     display: none;
-  }
-}
-
-@media (max-width: 768px) {
-  .profile-evaluation-section {
-    flex-direction: column;
-  }
-}
-
-@media (max-width: 768px) {
-  .navbar,
-  .footerbar {
-    flex-direction: column;
-    padding: 20px;
-  }
-
-  .navbar-logo {
-    margin-bottom: 20px;
   }
 }
 
@@ -414,10 +386,57 @@ width: 50px; / Adjust as needed */
   }
 
   .phone-input,
-  .otp-input,
-  .otp-button {
+  .otp-input {
     width: 94%;
     margin-right: 0;
     margin-bottom: 10px;
+  }
+
+  .navbar,
+  .footerbar {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .navbar-logo {
+    margin-bottom: 20px;
+  }
+
+  .profile-evaluation-section {
+    flex-direction: column;
+  }
+  .download-button-container {
+    flex-direction: column;
+  }
+  .cards-container {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 850px) {
+  .how-to-use-section,
+  .profile-evaluation-section {
+    width: 70%;
+  }
+
+  .management-journey-section .management-text {
+    width: 75%;
+  }
+
+  .how-to-use-section {
+    width: 72%;
+  }
+
+  .analysis-section,
+  .insights-section p {
+    width: 100%;
+  }
+
+  .form-main {
+    width: 80%;
+  }
+
+  .ai-response-box {
+    width: 90%;
   }
 }
