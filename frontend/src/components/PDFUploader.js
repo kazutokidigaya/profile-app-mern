@@ -477,13 +477,13 @@ const PDFUploader = () => {
             </div>
           )}
 
-          {/* {attempts && otpVerified && ( */}
-          <div className="download-button-container">
-            <button className="upload-button" onClick={downloadAIResponsePdf}>
-              Download Response
-            </button>
-          </div>
-          {/* )} */}
+          {attempts && otpVerified && (
+            <div className="download-button-container">
+              <button className="upload-button" onClick={downloadAIResponsePdf}>
+                Download Response
+              </button>
+            </div>
+          )}
           {!attempts && (
             <p className="usage-message">
               You have used your max allocated usage.
