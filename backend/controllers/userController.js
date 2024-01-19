@@ -195,17 +195,36 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getUserDataForAdmin = async (req, res) => {
   try {
+    // Fetch registered user details and their associated PDFs
     const userDetails = await User.aggregate([
       {
         $lookup: {
-          from: "pdfs", // the collection to join
-          localField: "_id", // field from the input documents
-          foreignField: "userId", // field from the documents of the "from" collection
-          as: "pdfDetails", // output array field
+          from: "pdfs",
+          localField: "_id",
+          foreignField: "userId",
+          as: "pdfDetails",
         },
       },
     ]);
-    res.json(userDetails);
+
+    // Fetch PDFs with userId as null
+    const unregisteredPdfs = await PdfModel.find({ userId: null });
+
+    // Transform unregistered PDFs to match the structure of user details
+    const unregisteredPdfDetails = unregisteredPdfs.map((pdf) => ({
+      _id: pdf._id,
+      name: "Unregistered",
+      email: "N/A",
+      mobile: "N/A",
+      pdfDetails: [pdf],
+      created_at: pdf.created_at,
+      updated_at: pdf.updated_at,
+    }));
+
+    // Combine both registered and unregistered PDFs
+    const combinedDetails = [...userDetails, ...unregisteredPdfDetails];
+
+    res.json(combinedDetails);
   } catch (error) {
     res.status(500).send(`Error: ${error.message}`);
   }
