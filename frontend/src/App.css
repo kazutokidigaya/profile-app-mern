@@ -334,6 +334,11 @@ width: 50px; / Adjust as needed */
   margin: 60px 0px 20px 0px;
 }
 
+.otp-button:hover {
+  background-color: white;
+  color: #4caf50;
+  border: 1px solid #4caf50;
+}
 /* Responsive adjustments */
 
 @media (max-width: 1300px) {
