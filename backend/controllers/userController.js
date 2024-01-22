@@ -118,22 +118,29 @@ exports.registerUser = async (req, res) => {
     res.status(500).json({ message: "Error registering user", error });
   }
 };
-
 // Register a new user or update an existing user
 exports.registerUser = async (req, res) => {
   const { name, email, mobile, pdfId, source, medium, campaign } = req.body;
 
   try {
-    let user = await User.findOne({ mobile });
+    // Try to find the user by email or mobile
+    let user = await User.findOne({ $or: [{ email }, { mobile }] });
 
-    // Check if user has used all attempts
-    if (user && user.maxAttempts <= 0) {
-      return res
-        .status(200)
-        .json({ message: "You have used your max allocated usage." });
-    }
+    if (user) {
+      // Check if user has used all attempts
+      if (user.maxAttempts <= 0) {
+        return res
+          .status(200)
+          .json({ message: "You have used your max allocated usage." });
+      }
 
-    if (!user) {
+      // Update existing user's information and decrement attempts
+      user = await User.findOneAndUpdate(
+        { $or: [{ email }, { mobile }] },
+        { name, email, $inc: { maxAttempts: -1 }, updated_at: getISTDate() },
+        { new: true }
+      );
+    } else {
       // New user registration
       user = new User({
         name,
@@ -143,13 +150,6 @@ exports.registerUser = async (req, res) => {
         updated_at: getISTDate(),
       });
       await user.save();
-    } else {
-      // Existing user - decrement attempts
-      await User.findOneAndUpdate(
-        { mobile },
-        { name, email, $inc: { maxAttempts: -1 }, updated_at: getISTDate() },
-        { new: true }
-      );
     }
 
     // Create or update lead in LeadSquared CRM
