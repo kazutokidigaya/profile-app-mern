@@ -118,7 +118,7 @@ const PDFUploader = () => {
 
     const formData = new FormData();
     formData.append("file", selectedFile);
-    setProgress(40);
+    setProgress(20);
     setIsLoading(true);
     setStatusMessage("Uploading PDF...");
 
@@ -134,12 +134,11 @@ const PDFUploader = () => {
 
       // Assuming the file upload is done here
       setProgress(40); // Set progress to 40% after file upload
-      setStatusMessage("Uploading PDF...");
-
+      setStatusMessage("Processing with AI...");
       // Wait for 2 seconds before simulating the AI processing
       setTimeout(() => {
-        setProgress(80); // Set progress to 80% to simulate AI processing
-        setStatusMessage("Processing with AI...");
+        setProgress(60); // Set progress to 80% to simulate AI processing
+        setStatusMessage("Almost there...");
 
         // Simulate the completion of AI processing after 2 more seconds
         setTimeout(() => {
@@ -149,8 +148,8 @@ const PDFUploader = () => {
           toast.success("Response generated successfully!");
           setStatusMessage("Done!");
           setIsLoading(false); // Set loading to false when everything is done
-        }, 2000);
-      }, 2000);
+        }, 1000);
+      }, 1000);
     } catch (error) {
       console.error("Error uploading file:", error);
       toast.error(error.response.data.message);
@@ -477,17 +476,17 @@ const PDFUploader = () => {
             </div>
           )}
 
+          {!attempts && (
+            <p className="usage-message">
+              You have used your max allocated usage.
+            </p>
+          )}
           {attempts && otpVerified && (
             <div className="download-button-container">
               <button className="upload-button" onClick={downloadAIResponsePdf}>
                 Download Response
               </button>
             </div>
-          )}
-          {!attempts && (
-            <p className="usage-message">
-              You have used your max allocated usage.
-            </p>
           )}
 
           {isLoading && (
