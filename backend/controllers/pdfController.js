@@ -8,8 +8,7 @@ const fetch = require("node-fetch");
 const { Stream } = require("stream");
 
 const prompts = [
-  "act like an expert mba admissions consultant. evaluate this resume. look at the total number of years of experience and advice the applicant on how mba ready they are. for instance, someone with 0 to 2 years of experience might not have the best chance cracking a top mba program but might be able to get into a b-school in your own country. provide very specific advice based on the user's years of experience.",
-  "act check the education background, career experience, projects, skills and keywords mentioned in the resume. based on what you find, provide a summary of the applicant's journey so far. follow this up with suggestions on what kind of mba programs would work for them. after this, they need to know about the top 3 possible career paths they can get into post-mba along with some details about the same .",
+  "Act like an MBA Admissions expert with 20+ years of experience in helping people crack top schools around the world. Please provide a detailed analysis of the attached resume for an MBA application with a focus on personalized and actionable advice. Address the following points in a friendly mentor tone: 1. Detailed Summary of Background and Experience: [Elaborate on the candidate's education, work history, key skills, and interests. Highlight any unique aspects or achievements. Mention how these experiences can be an asset in an MBA program.] 2. Suitability for an MBA: [Discuss how the candidate's specific experiences and career goals align with pursuing an MBA. Provide insights on how an MBA could bridge gaps in their current skill set or career trajectory.] 3. Field of Specialization Advice: [Based on the candidate's unique background and aspirations, suggest specific MBA specializations. Explain why these specializations are a good fit and how they can help in achieving their career goals.] 4. Program and Geography Recommendations: [Recommend MBA programs and locations based on the candidate's professional experience and personal preferences. Offer reasons for each recommendation and how they align with the candidate's career path.] 5. Key Considerations: [Offer practical advice on financial planning, balancing work and study, and preparing for MBA admissions. Suggest resources or steps they can take to address these areas.] 6. Other Considerations: [Discuss factors such as cultural fit, networking opportunities, and long-term career planning, tailored to the candidate's background and goals.] Please use direct, encouraging language, offering guidance as a mentor who understands the candidate's unique journey and potential. Keep readability as a top priority and break down complex sections into paras and bullet points wherever needed. Keep the advice personal and address the reader using pronouns like you and your.Do not roleplay, talk about yourself, or add a signature in the response.",
 ];
 
 // Function to calculate hash of the file for uniqueness
@@ -129,7 +128,6 @@ async function downloadPdf(req, res) {
     res.status(500).json({ message: "Error downloading PDF" });
   }
 }
-
 async function generatePdfFromResponse(req, res) {
   try {
     const { responses, name } = req.body;
@@ -175,9 +173,6 @@ async function generatePdfFromResponse(req, res) {
     doc.addPage(); // Start a new page for the responses
 
     responses.forEach((response, index) => {
-      // Ensure border and image for the first page of each response
-      addBorderAndImage(doc);
-
       // Draw the text
       const textWidth = doc.page.width - 2 * 50;
       doc.fontSize(17).fillColor("black");
@@ -191,7 +186,6 @@ async function generatePdfFromResponse(req, res) {
         if (doc.y + paragraphHeight > doc.page.height - 50) {
           // Check if adding the paragraph will exceed the page height
           doc.addPage(); // Add a new page
-          addBorderAndImage(doc); // Add border and image for the new page
         }
 
         // Draw the paragraph
@@ -200,21 +194,21 @@ async function generatePdfFromResponse(req, res) {
           align: "justify",
         });
         doc.moveDown(); // Add some space after the paragraph
+        addBorderAndImage(doc); // Add border and image for the current page
       });
 
       // Add a new page after each response, except for the last one
       if (index !== responses.length - 1) {
         doc.addPage();
-        addBorderAndImage(doc); // Ensure border and image on the new page
       }
     });
 
     // Add a thank you page
     doc.addPage();
-    addBorderAndImage(doc); // Add border and image to the thank you page
     doc.fontSize(38).text("Thank You!", 50, 220, {
       align: "center",
     });
+    addBorderAndImage(doc); // Add border and image to the thank you page
 
     // Finalize the PDF and end the stream
     doc.pipe(stream);

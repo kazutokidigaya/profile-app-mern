@@ -122,6 +122,10 @@ const PDFUploader = () => {
     setIsLoading(true);
     setStatusMessage("Uploading PDF...");
 
+    setTimeout(() => {
+      setProgress(40); // Set progress to 40% after file upload
+      setStatusMessage("Analyzing Your Resume...");
+    }, 1000);
     try {
       // Upload PDF and process with OpenAI in one step
       const uploadResponse = await axios.post(
@@ -132,13 +136,10 @@ const PDFUploader = () => {
         }
       );
 
-      // Assuming the file upload is done here
-      setProgress(40); // Set progress to 40% after file upload
-      setStatusMessage("Processing with AI...");
       // Wait for 2 seconds before simulating the AI processing
       setTimeout(() => {
         setProgress(60); // Set progress to 80% to simulate AI processing
-        setStatusMessage("Almost there...");
+        setStatusMessage("Applying Crackverbal Magic...");
 
         // Simulate the completion of AI processing after 2 more seconds
         setTimeout(() => {
@@ -149,7 +150,7 @@ const PDFUploader = () => {
           setStatusMessage("Done!");
           setIsLoading(false); // Set loading to false when everything is done
         }, 1000);
-      }, 1000);
+      }, 2000);
     } catch (error) {
       console.error("Error uploading file:", error);
       toast.error(error.response.data.message);
@@ -187,7 +188,7 @@ const PDFUploader = () => {
         );
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", "ai_responses.pdf");
+        link.setAttribute("download", `${userData.name}_analysis.pdf`);
         document.body.appendChild(link);
         link.click();
         toast.success("PDF downloaded successfully!");
@@ -481,13 +482,13 @@ const PDFUploader = () => {
               You have used your max allocated usage.
             </p>
           )}
-          {attempts && otpVerified && (
-            <div className="download-button-container">
-              <button className="upload-button" onClick={downloadAIResponsePdf}>
-                Download Response
-              </button>
-            </div>
-          )}
+          {/* {attempts && otpVerified && ( */}
+          <div className="download-button-container">
+            <button className="upload-button" onClick={downloadAIResponsePdf}>
+              Download Response
+            </button>
+          </div>
+          {/* )} */}
 
           {isLoading && (
             <div className="progress-bar-container">
