@@ -1,47 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import "./App.css";
 
 const AdminPanel = () => {
   const [userDetails, setUserDetails] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const [credentials, setCredentials] = useState({
     username: "",
     password: "",
   });
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    // Fetch user details only if logged in
-    if (isLoggedIn) {
-      const fetchUserDetails = async () => {
-        try {
-          const response = await axios.get(
-            "http://localhost:3000/api/users/details"
-          );
-          setUserDetails(response.data);
-        } catch (error) {
-          console.error("Error fetching user details:", error);
-        }
-      };
-      fetchUserDetails();
-    }
-  }, [isLoggedIn]);
-
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    const { username, password } = credentials;
-
-    if (
-      username === process.env.REACT_APP_USERNAME &&
-      password === process.env.REACT_APP_PASSWORD
-    ) {
+    const authString = `${encodeURIComponent(
+      credentials.username
+    )}:${encodeURIComponent(credentials.password)}`;
+    const authBase64 = btoa(authString);
+    console.log(authBase64);
+    console.log(authString);
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/users/details`,
+        {
+          headers: {
+            Authorization: `Basic ${authBase64}`,
+          },
+        }
+      );
+      setUserDetails(response.data);
       setIsLoggedIn(true);
-      setError(""); // Clear any previous error messages
-    } else {
+      setError("");
+    } catch (error) {
       setIsLoggedIn(false);
-      setError("Please input correct credentials.");
+      setError("Authentication failed. Please check your credentials.");
+      console.error("Error fetching user details:", error);
     }
   };
 
@@ -52,7 +47,7 @@ const AdminPanel = () => {
   const downloadPdf = async (pdfId) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/pdfs/download/${pdfId}`,
+        `${process.env.REACT_APP_API_URL}/pdfs/download/${pdfId}`,
         { responseType: "blob" }
       );
       const url = window.URL.createObjectURL(new Blob([response.data]));
