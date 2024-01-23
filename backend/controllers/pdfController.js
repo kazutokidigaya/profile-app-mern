@@ -41,9 +41,9 @@ async function processPdfWithOpenAI(pdfText) {
 
       // Call the OpenAI API for chat completion
       const chatCompletion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-3.5-turbo-0301",
         messages: messages,
-        // max_tokens: 250,
+        // gpt-3.5-turbo-0301
       });
 
       // Collect the AI's response from the chat

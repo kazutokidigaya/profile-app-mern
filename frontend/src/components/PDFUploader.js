@@ -120,11 +120,11 @@ const PDFUploader = () => {
     formData.append("file", selectedFile);
     setProgress(20);
     setIsLoading(true);
-    setStatusMessage("Uploading PDF...");
+    setStatusMessage("Uploading your resume...");
 
     setTimeout(() => {
       setProgress(40); // Set progress to 40% after file upload
-      setStatusMessage("Analyzing Your Resume...");
+      setStatusMessage("Analysing your profile...");
     }, 1000);
     try {
       // Upload PDF and process with OpenAI in one step
@@ -139,7 +139,7 @@ const PDFUploader = () => {
       // Wait for 2 seconds before simulating the AI processing
       setTimeout(() => {
         setProgress(60); // Set progress to 80% to simulate AI processing
-        setStatusMessage("Applying Crackverbal Magic...");
+        setStatusMessage("Creating your personalized report...");
 
         // Simulate the completion of AI processing after 2 more seconds
         setTimeout(() => {
@@ -492,10 +492,12 @@ const PDFUploader = () => {
 
           {isLoading && (
             <div className="progress-bar-container">
-              <div
-                className="progress-bar"
-                style={{ width: `${progress}%` }}
-              ></div>
+              <div className="progress">
+                <div
+                  className="progress-bar"
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
               <p>{statusMessage}</p>
             </div>
           )}
