@@ -11,9 +11,6 @@ router.post(
   pdfController.uploadOrRetrievePdf
 );
 
-// The process route is not needed as processing is done in the upload route
-// router.get("/process/:pdfId", pdfController.processPdfWithOpenAI);
-
 router.get("/download/:pdfId", pdfController.downloadPdf);
 router.post("/generate-pdf", pdfController.generatePdfFromResponse);
 
