@@ -8,7 +8,7 @@ const fetch = require("node-fetch");
 const { Stream } = require("stream");
 
 const prompts = [
-  "Act like an MBA Admissions expert with 20+ years of experience in helping people crack top schools around the world. Please provide a detailed analysis of the attached resume for an MBA application with a focus on personalized and actionable advice. Address the following points in a friendly mentor tone: 1. Detailed Summary of Background and Experience: [Elaborate on the candidate's education, work history, key skills, and interests. Highlight any unique aspects or achievements. Mention how these experiences can be an asset in an MBA program.] 2. Suitability for an MBA: [Discuss how the candidate's specific experiences and career goals align with pursuing an MBA. Provide insights on how an MBA could bridge gaps in their current skill set or career trajectory.] 3. Field of Specialization Advice: [Based on the candidate's unique background and aspirations, suggest specific MBA specializations. Explain why these specializations are a good fit and how they can help in achieving their career goals.] 4. Program and Geography Recommendations: [Recommend MBA programs and locations based on the candidate's professional experience and personal preferences. Offer reasons for each recommendation and how they align with the candidate's career path.] 5. Key Considerations: [Offer practical advice on financial planning, balancing work and study, and preparing for MBA admissions. Suggest resources or steps they can take to address these areas.] 6. Other Considerations: [Discuss factors such as cultural fit, networking opportunities, and long-term career planning, tailored to the candidate's background and goals.] Please use direct, encouraging language, offering guidance as a mentor who understands the candidate's unique journey and potential. Keep readability as a top priority and break down complex sections into paras and bullet points wherever needed. Keep the advice personal and address the reader using pronouns like you and your.Do not roleplay, talk about yourself, or add a signature in the response.",
+  "Please provide a detailed analysis of the attached resume for an MBA application with a focus on personalized and actionable advice. Address the following points in a friendly mentor tone: 1. Detailed Summary of Background and Experience: [Elaborate on the candidate's education, work history, key skills, and interests. Highlight any unique aspects or achievements. Mention how these experiences can be an asset in an MBA program.] 2. Suitability for an MBA: [Discuss how the candidate's specific experiences and career goals align with pursuing an MBA. Provide insights on how an MBA could bridge gaps in their current skill set or career trajectory.] 3. Field of Specialization Advice: [Based on the candidate's unique background and aspirations, suggest specific MBA specializations. Explain why these specializations are a good fit and how they can help in achieving their career goals.] 4. Program and Geography Recommendations: [Recommend MBA programs and locations based on the candidate's professional experience and personal preferences. Offer reasons for each recommendation and how they align with the candidate's career path.] 5. Key Considerations: [Offer practical advice on financial planning, balancing work and study, and preparing for MBA admissions. Suggest resources or steps they can take to address these areas.] 6. Other Considerations: [Discuss factors such as cultural fit, networking opportunities, and long-term career planning, tailored to the candidate's background and goals.] Please use direct, encouraging language, offering guidance like a mentor who understands the candidate's unique journey and potential. Keep readability as a top priority and break down complex sections into paras and bullet points wherever needed. Keep the advice personal and address the reader using pronouns like 'you' and 'your'. DO NOT ROLEPLAY. DO NOT ADD A SALUTATION.  DO NOT REFER TO YOURSELF AS 'I' OR ANYTHING LIKE THAT. THE SIGNATURE CAN BE Team Crackverbal ",
 ];
 
 // Function to calculate hash of the file for uniqueness
@@ -41,7 +41,7 @@ async function processPdfWithOpenAI(pdfText) {
 
       // Call the OpenAI API for chat completion
       const chatCompletion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo-0301",
+        model: "gpt-3.5-turbo",
         messages: messages,
         // gpt-3.5-turbo-0301
       });
@@ -128,6 +128,7 @@ async function downloadPdf(req, res) {
     res.status(500).json({ message: "Error downloading PDF" });
   }
 }
+
 async function generatePdfFromResponse(req, res) {
   try {
     const { responses, name } = req.body;
@@ -165,11 +166,39 @@ async function generatePdfFromResponse(req, res) {
       );
     };
 
-    // Add a title page with "Profile Analysis Report for [name]"
-    doc.fontSize(38).text(`Profile Analysis Report For ${name}`, 50, 220, {
+    const addBorder = (doc) => {
+      doc
+        .rect(10, 10, doc.page.width - 20, doc.page.height - 20)
+        .stroke("#0029e4");
+    };
+
+    const headerImageWidth = 150; // Set the width of the image
+    const headerImageHeight =
+      (headerImage.height * headerImageWidth) / headerImage.width; // Calculate the height to maintain aspect ratio
+
+    // Add the logo in the center of the page
+    doc.image(
+      headerImage,
+      (doc.page.width - headerImageWidth) / 2, // Center the image horizontally
+      doc.page.height / 3 - headerImageHeight - 20, // Position the image in the middle of the page vertically
+      { width: headerImageWidth }
+    );
+
+    // Add the title text below the logo
+    doc.fontSize(38).text(`Profile Evaluation of ${name}`, 50, 320, {
       align: "center",
     });
-    addBorderAndImage(doc); // Add border and image to the title page
+
+    // Add the subtitle text below the title
+    doc
+      .fontSize(18)
+      .fillColor("grey")
+      .text("- A Report by Crackverbal", 50, 440, {
+        align: "center",
+        lineGap: 15,
+      });
+
+    addBorder(doc); // Add border and image to the title page
     doc.addPage(); // Start a new page for the responses
 
     responses.forEach((response, index) => {
@@ -205,9 +234,59 @@ async function generatePdfFromResponse(req, res) {
 
     // Add a thank you page
     doc.addPage();
-    doc.fontSize(38).text("Thank You!", 50, 220, {
+    doc.fontSize(28).text("Ready to Turn Insights into Action? ", 50, 220, {
       align: "center",
     });
+
+    // Text block
+    const textBlock =
+      "Completing your profile evaluation is just the beginning.Connect with a career advisor to understand your analysis and map out your personalized path to a management program. They're ready to help you strategize and answer any questions.";
+    const textBlockX = 50;
+    const textBlockY = 280;
+    const textBlockWidth = doc.page.width - 100;
+
+    // Add text on top of the button rectangle
+    doc
+      .fontSize(18)
+      .fillColor("#818589")
+      .text(textBlock, textBlockX, textBlockY, {
+        width: textBlockWidth,
+        align: "center",
+      });
+
+    // Get the height of the text block to position the button below it
+    const textHeight = doc.heightOfString(textBlock, {
+      width: textBlockWidth,
+    });
+
+    // Define button styles
+    const buttonWidth = 190;
+    const buttonHeight = 35;
+    const buttonX = (doc.page.width - buttonWidth) / 2;
+    const buttonY = textBlockY + textHeight + 60; // Position the button below the text block
+
+    // Draw button rectangle
+    doc
+      .rect(buttonX, buttonY, buttonWidth, buttonHeight)
+      .fillAndStroke("#0029e4", "#0029e4");
+
+    // Add text on top of the button rectangle
+    doc
+      .fontSize(18)
+      .fillColor("white")
+      .text(
+        "Schedule my free call",
+        buttonX,
+        buttonY + buttonHeight / 2 - 9, // Center text vertically in the button
+        {
+          width: buttonWidth,
+          align: "center",
+        }
+      );
+
+    // Add link over the button
+    doc.link(buttonX, buttonY, buttonWidth, buttonHeight, "http://calend.ly/");
+
     addBorderAndImage(doc); // Add border and image to the thank you page
 
     // Finalize the PDF and end the stream
