@@ -285,7 +285,13 @@ async function generatePdfFromResponse(req, res) {
       );
 
     // Add link over the button
-    doc.link(buttonX, buttonY, buttonWidth, buttonHeight, "http://calend.ly/");
+    doc.link(
+      buttonX,
+      buttonY,
+      buttonWidth,
+      buttonHeight,
+      "https://calendly.com/studentsupport-1/counselling-call-crackverbal?utm_source=profile-app&utm_campaign=profile-app&utm_medium=pdf"
+    );
 
     addBorderAndImage(doc); // Add border and image to the thank you page
 

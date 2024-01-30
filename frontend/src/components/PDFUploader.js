@@ -477,18 +477,18 @@ const PDFUploader = () => {
             </div>
           )}
 
-          {!attempts && (
+          {/* {!attempts && (
             <p className="usage-message">
               You have used your max allocated usage.
             </p>
+          )} */}
+          {otpVerified && (
+            <div className="download-button-container">
+              <button className="upload-button" onClick={downloadAIResponsePdf}>
+                Download Response
+              </button>
+            </div>
           )}
-          {/* {attempts && otpVerified && ( */}
-          <div className="download-button-container">
-            <button className="upload-button" onClick={downloadAIResponsePdf}>
-              Download Response
-            </button>
-          </div>
-          {/* )} */}
 
           {isLoading && (
             <div className="progress-bar-container">
@@ -515,7 +515,15 @@ const PDFUploader = () => {
           personalized path to a management program. They're ready to help you
           strategize and answer any questions
         </p>
-        <button className="upload-button">Schedule My Free Call</button>
+        <button
+          className="upload-button"
+          onClick={() => {
+            window.location.href =
+              "https://calendly.com/studentsupport-1/counselling-call-crackverbal?utm_source=profile-app&utm_campaign=profile-eval&utm_medium=profile-page";
+          }}
+        >
+          Schedule My Free Call
+        </button>
       </div>
       <footer>
         <div className="footerbar">
