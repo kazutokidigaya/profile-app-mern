@@ -81,7 +81,24 @@ const PDFUploader = () => {
     }
   };
 
+  const capitalizeFirstLetterOfEachWord = (str) => {
+    const words = str.split(" ");
+    if (words.length === 0) return str;
+    for (let i = 0; i < words.length; i++) {
+      if (words[i].length > 0) {
+        words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+      }
+    }
+
+    return words.join(" ");
+  };
+
   const registerUser = async () => {
+    if (!userData.name || !userData.email || !userData.mobile) {
+      toast.error("Please fill in all the details");
+      return;
+    }
+
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/users/register`,
@@ -179,7 +196,7 @@ const PDFUploader = () => {
           `${process.env.REACT_APP_API_URL}/pdfs/generate-pdf`,
           {
             responses: openAIResponse,
-            name: userData.name,
+            name: capitalizeFirstLetterOfEachWord(userData.name),
           },
           { responseType: "blob" } // This ensures you get the response as a Blob
         );
@@ -477,11 +494,11 @@ const PDFUploader = () => {
             </div>
           )}
 
-          {/* {!attempts && (
+          {!attempts && (
             <p className="usage-message">
               You have used your max allocated usage.
             </p>
-          )} */}
+          )}
           {otpVerified && (
             <div className="download-button-container">
               <button className="upload-button" onClick={downloadAIResponsePdf}>
