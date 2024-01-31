@@ -260,8 +260,8 @@ async function generatePdfFromResponse(req, res) {
     });
 
     // Define button styles
-    const buttonWidth = 190;
-    const buttonHeight = 35;
+    const buttonWidth = 470;
+    const buttonHeight = 45;
     const buttonX = (doc.page.width - buttonWidth) / 2;
     const buttonY = textBlockY + textHeight + 60; // Position the button below the text block
 
@@ -272,10 +272,10 @@ async function generatePdfFromResponse(req, res) {
 
     // Add text on top of the button rectangle
     doc
-      .fontSize(18)
+      .fontSize(20)
       .fillColor("white")
       .text(
-        "Schedule my free call",
+        "Do you want to know your chances of admission?",
         buttonX,
         buttonY + buttonHeight / 2 - 9, // Center text vertically in the button
         {
@@ -292,6 +292,37 @@ async function generatePdfFromResponse(req, res) {
       buttonHeight,
       "https://calendly.com/studentsupport-1/counselling-call-crackverbal?utm_source=profile-app&utm_campaign=profile-app&utm_medium=pdf"
     );
+
+    // Define the WhatsApp logo image URL
+    const whatsappLogoImageUrl =
+      "https://lh3.googleusercontent.com/9bfRAIWxUF6gAjzeSCKCzcTC0Mj8Tk_8lPDkU_tW6zWElvRGN-5yZFaxIMFpLWd48zH7EMMPk6kx2oKOtG_a3lG2G9LUe1ckkc0=w500";
+
+    const whatsappLogoBuffer = await fetch(whatsappLogoImageUrl).then((res) =>
+      res.buffer()
+    );
+
+    // Define the link for the WhatsApp image
+    const whatsappImageLink =
+      "https://web.whatsapp.com/send?phone=+919650035764&amp;text=Hi, I would like to get more information..";
+
+    // Function to add WhatsApp clickable image
+    const addWhatsAppImage = (doc) => {
+      // Draw WhatsApp clickable image
+      const whatsappImageWidth = 250;
+      const whatsappImageHeight = 100;
+      doc.image(
+        whatsappLogoBuffer,
+        (doc.page.width - whatsappImageWidth) / 2,
+        buttonY + buttonHeight + 120, // Position the image below the button
+        {
+          width: whatsappImageWidth,
+          height: whatsappImageHeight,
+          link: whatsappImageLink, // Add the link to the WhatsApp image
+        }
+      );
+    };
+
+    addWhatsAppImage(doc); // Add WhatsApp clickable image to the thank you page
 
     addBorderAndImage(doc); // Add border and image to the thank you page
 
