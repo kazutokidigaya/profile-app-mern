@@ -173,8 +173,8 @@ footer {
   }
 }
 
-.management-journey-section .management-card-main {
-  width: 85%;
+.management-card-main {
+  width: 75%;
   margin: auto; /* Centers the section */
 }
 

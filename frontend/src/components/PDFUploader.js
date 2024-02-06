@@ -435,9 +435,9 @@ const PDFUploader = () => {
               style={{ display: "none" }}
             />
             <img
-              src="https://lh3.googleusercontent.com/QqIro2iF868BmqZARB7u_JvZ_CR9JDOzQhdsDCngPsBOuXYlEj6_1-fnq4FPOyBs0mQbFJQdz_sXPKfIGOkSpmDCYPiRY7XF3p8=s0"
+              src="/upload.png"
               alt="Upload Icon"
-              width={80}
+              width={100}
               className="upload-icon"
             />
             <p>Drag and drop, or click to upload</p>
