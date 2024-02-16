@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema({
   },
   maxAttempts: {
     type: Number,
-    default: 3,
+    default: 99,
   },
 
   created_at: { type: Date, default: getISTDate },

@@ -50,16 +50,19 @@ export default function HowItWorks() {
         </div>
       </div>
 
-      <div class="timeline__event animated fadeInUp delay-1s timeline__event--type3">
-        <div class="timeline__event__icon">
-          <img src="https://lh3.googleusercontent.com/CwuUQ6-7UcqyYnvKZEpcIPvgZkF4lxH4DTuauDen_RoaVXmEjTqexmV3Tr1cDF441uhGir--qvCd8xHJl0WrjFC0srv_FkB1JEs=s0" />
+      <div className="timeline__event animated fadeInUp delay-1s timeline__event--type3">
+        <div className="timeline__event__icon">
+          <img
+            src="https://lh3.googleusercontent.com/CwuUQ6-7UcqyYnvKZEpcIPvgZkF4lxH4DTuauDen_RoaVXmEjTqexmV3Tr1cDF441uhGir--qvCd8xHJl0WrjFC0srv_FkB1JEs=s0"
+            alt="icon"
+          />
         </div>
-        <div style={{ color: "white" }} class="timeline__event__date">
+        <div style={{ color: "white" }} className="timeline__event__date">
           Step 3
         </div>
-        <div class="timeline__event__content">
-          <div class="timeline__event__title">Fill Out a Brief Form:</div>
-          <div class="timeline__event__description">
+        <div className="timeline__event__content">
+          <div className="timeline__event__title">Fill Out a Brief Form:</div>
+          <div className="timeline__event__description">
             <p style={{ padding: "15px" }}>
               Provide basic information to personalize your report and help us
               get in touch with you.
@@ -68,18 +71,21 @@ export default function HowItWorks() {
         </div>
       </div>
 
-      <div class="timeline__event animated fadeInUp timeline__event--type1">
-        <div class="timeline__event__icon">
-          <img src="https://lh3.googleusercontent.com/nDm0ct32wih4sTGP_d55-f-ezDrWy4OSNPPQ0wU4idBzZ51S3o1ADW0YEo_XF-Tl2tQVwTFND4KymNQ1K4x6YEvqAtzroYUgbw=s0" />
+      <div className="timeline__event animated fadeInUp timeline__event--type1">
+        <div className="timeline__event__icon">
+          <img
+            src="https://lh3.googleusercontent.com/nDm0ct32wih4sTGP_d55-f-ezDrWy4OSNPPQ0wU4idBzZ51S3o1ADW0YEo_XF-Tl2tQVwTFND4KymNQ1K4x6YEvqAtzroYUgbw=s0"
+            alt="icon"
+          />
         </div>
-        <div style={{ color: "white" }} class="timeline__event__date">
+        <div style={{ color: "white" }} className="timeline__event__date">
           Step 4
         </div>
-        <div class="timeline__event__content">
-          <div class="timeline__event__title">
+        <div className="timeline__event__content">
+          <div className="timeline__event__title">
             Receive Your Personalized Report:
           </div>
-          <div class="timeline__event__description">
+          <div className="timeline__event__description">
             <p>
               Get a detailed report highlighting your alignment with management
               programs, showcasing your competitive edge and areas for growth.
@@ -88,16 +94,21 @@ export default function HowItWorks() {
         </div>
       </div>
 
-      <div class="timeline__event animated fadeInUp delay-1s timeline__event--type3">
-        <div class="timeline__event__icon">
-          <img src="https://lh3.googleusercontent.com/kb39wVtoCM9qGBoiO09JR5F4q8eM8mE1cNr5biTFdCIe9X7a0FCAkl07SxofzExWK36Q-WHvD1OuwVDYUK5sb801sc9StaEheDY=s0" />
+      <div className="timeline__event animated fadeInUp delay-1s timeline__event--type3">
+        <div className="timeline__event__icon">
+          <img
+            src="https://lh3.googleusercontent.com/kb39wVtoCM9qGBoiO09JR5F4q8eM8mE1cNr5biTFdCIe9X7a0FCAkl07SxofzExWK36Q-WHvD1OuwVDYUK5sb801sc9StaEheDY=s0"
+            alt="icon"
+          />
         </div>
-        <div style={{ color: "white" }} class="timeline__event__date">
+        <div style={{ color: "white" }} className="timeline__event__date">
           Step 5
         </div>
-        <div class="timeline__event__content">
-          <div class="timeline__event__title">Consultation with an Expert:</div>
-          <div class="timeline__event__description">
+        <div className="timeline__event__content">
+          <div className="timeline__event__title">
+            Consultation with an Expert:
+          </div>
+          <div className="timeline__event__description">
             <p style={{ padding: "14.5px" }}>
               Schedule a call with a career expert to delve deeper into your
               results and discuss strategies for your management career journey.

@@ -5,50 +5,74 @@ const {
   updateActivity,
 } = require("../utils/leadsquaredUtil");
 
-const twilio = require("twilio");
-
 require("dotenv").config();
-const accountSid = process.env.TWILIO_ACCOUNT_SID; // Replace with your Account SID
-const authToken = process.env.TWILIO_AUTH_TOKEN; // Replace with your Auth Token
-const verifySid = process.env.TWILIO_SERVICE_SID; // Replace with your Verify Service SID
-const twilioClient = twilio(accountSid, authToken);
+const accountid = process.env.PLIVO_AUTH_ID; // Replace with your Account SID
+const authToken = process.env.PLIVO_AUTH_TOKEN; // Replace with your Auth Token
+
+const plivo = require("plivo");
+const client = new plivo.Client(accountid, authToken);
+
 const PdfModel = require("../models/pdfModel");
 // Other functions...
 
 const { getISTDate } = require("../utils/getISTDate");
 
+let otpStore = {};
+
+// Function to generate a 6-digit OTP
+function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Function to save OTP against a mobile number
+function saveOtp(mobile, otp) {
+  otpStore[mobile] = otp;
+}
+
 exports.sendOTP = async (req, res) => {
   const { mobile } = req.body;
-  const formattedMobile = `+${mobile}`; // Adjust according to your needs
+  const otp = generateOTP();
+  const formattedMobile = `+${mobile}`; // Ensure the mobile number is in E.164 format
 
   try {
-    const verification = await twilioClient.verify
-      .services(verifySid)
-      .verifications.create({ to: formattedMobile, channel: "sms" });
-    res
-      .status(200)
-      .json({ message: "OTP sent", verification: verification.status });
+    // Save the OTP
+    saveOtp(formattedMobile, otp);
+
+    await client.messages.create({
+      src: process.env.PLIVO_SENDER_ID, // Replace with your Plivo number
+      dst: formattedMobile,
+      text: `Your OTP is: ${otp}`,
+    });
+
+    res.status(200).json({ message: "OTP sent successfully" });
   } catch (error) {
     console.error("Error in sendOTP:", error);
-    res.status(500).json({ message: "Error sending OTP", error });
+    res
+      .status(500)
+      .json({ message: "Error sending OTP", error: error.toString() });
   }
 };
 
+// Function to retrieve OTP for a mobile number
+function getOtp(mobile) {
+  return otpStore[mobile];
+}
+
 exports.verifyOTP = async (req, res) => {
-  const { mobile, code } = req.body;
-  const formattedMobile = `+${mobile}`; // Adjust according to your needs
+  const { mobile, otp } = req.body;
+  const savedOtp = getOtp(`+${mobile}`);
 
   try {
-    const verificationCheck = await twilioClient.verify
-      .services(verifySid)
-      .verificationChecks.create({ to: formattedMobile, code });
-    res.status(200).json({
-      message: "OTP verified",
-      verification: verificationCheck.status,
-    });
+    if (otp === savedOtp) {
+      res.status(200).json({ message: "OTP verified successfully" });
+      // Optionally, remove the OTP from the store after successful verification
+      delete otpStore[`+${mobile}`];
+    } else {
+      res.status(400).json({ message: "Invalid OTP" });
+    }
   } catch (error) {
     console.error("Error in verifyOTP:", error);
-    res.status(500).json({ message: "Error verifying OTP", error });
+    res.status(500).json({ message: "Server error", error: error.toString() });
   }
 };
 

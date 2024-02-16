@@ -60,8 +60,25 @@ async function processPdfWithOpenAI(pdfText) {
 
 // Upload or retrieve PDF
 async function uploadOrRetrievePdf(req, res) {
+  // Broadcast progress update to all connected clients
+
+  const broadcastProgress = (processId, progress, message) => {
+    if (req.wss && req.wss.clients) {
+      req.wss.clients.forEach((client) => {
+        // Use the numeric value `1` directly instead of `WebSocket.OPEN`
+        if (client.readyState === 1) {
+          client.send(JSON.stringify({ processId, progress, message }));
+        }
+      });
+    } else {
+      console.error("WebSocket server (wss) is not available on req.wss");
+    }
+  };
+
   try {
     const { originalname, buffer } = req.file;
+    const processId = req.query.processId;
+
     const fileHash = calculateFileHash(buffer);
 
     // Check if a PDF with the same hash already exists
@@ -75,12 +92,15 @@ async function uploadOrRetrievePdf(req, res) {
         userId: null, // Set userId to null initially
       });
       await pdf.save();
+
+      broadcastProgress(processId, 25, "File uploaded");
     }
     // Convert PDF to text
     let pdfText;
     try {
       // Attempt to convert PDF to text
       pdfText = await convertPdfToText(pdf.fileData);
+      broadcastProgress(processId, 70, "Creating your personalized report...");
     } catch (error) {
       // Handle the error specifically from pdfParse
       console.error("Error converting PDF to text:", error);
@@ -99,9 +119,11 @@ async function uploadOrRetrievePdf(req, res) {
     }
 
     const openaiResponses = await processPdfWithOpenAI(pdfText);
+    broadcastProgress(processId, 95, "Analysis complete");
     res
       .status(200)
       .json({ message: "PDF processed", pdfId: pdf._id, openaiResponses });
+    broadcastProgress(processId, 100, "Done");
   } catch (error) {
     console.error("Error in PDF upload:", error);
     res.status(500).json({ message: "Error uploading PDF" });

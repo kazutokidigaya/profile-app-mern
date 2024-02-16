@@ -4,6 +4,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import toast, { Toaster } from "react-hot-toast";
 import HowItWorks from "./HowItWorks";
+import ReactGA from "react-ga4";
 
 const PDFUploader = () => {
   const [uploadedPdfId, setUploadedPdfId] = useState(null);
@@ -27,8 +28,33 @@ const PDFUploader = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [statusMessage, setStatusMessage] = useState("");
+  const [processId, setProcessId] = useState("");
   const fileInputRef = useRef(null);
   const analysisSectionRef = useRef(null);
+
+  // Ref for keeping the up-to-date processId
+  const processIdRef = useRef(processId);
+
+  const [currentQuote, setCurrentQuote] = useState("");
+
+  const quotes = [
+    "GMAT/GRE scores are key in MBA applications, showcasing academic readiness.",
+    "Programs like Harvard and Stanford assess candidates holistically, valuing essays and work experience.",
+    "Campus visits and info sessions are crucial for understanding a program's culture.",
+    "Recommendation letters provide deep insights into an applicant's professional skills.",
+    "MBA essays highlight personal journeys and career goals, aligning with program benefits.",
+    "Interviews are pivotal, testing communication skills and program fit.",
+    "Financial planning, including scholarships, is crucial for high ROI schools like INSEAD.",
+    "Specializations matter; MIT Sloan is known for innovation and entrepreneurship.",
+    "Early application rounds often offer better admission and scholarship chances.",
+    "Engaging with alumni offers valuable insights into program experiences.",
+  ];
+
+  // Function to select a random quote
+  const updateQuote = () => {
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    setCurrentQuote(quotes[randomIndex]);
+  };
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
@@ -37,6 +63,62 @@ const PDFUploader = () => {
       campaign: queryParams.get("utm_campaign") || "",
       medium: queryParams.get("utm_medium") || "",
     });
+  }, []);
+
+  useEffect(() => {
+    processIdRef.current = processId;
+  }, [processId]);
+
+  // Define a ref to store the quote update interval ID
+  const quoteUpdateIntervalRef = useRef(null);
+
+  useEffect(() => {
+    updateQuote();
+
+    quoteUpdateIntervalRef.current = setInterval(() => {
+      updateQuote(); // Call your function to update the quote
+    }, 4500);
+
+    return () => {
+      clearInterval(quoteUpdateIntervalRef.current); // Clear the interval on component unmount
+    };
+  }, []); // Empty dependency array ensures this effect runs only once on mount
+
+  useEffect(() => {
+    const ws = new WebSocket("ws://localhost:5000");
+
+    ws.onopen = () => {
+      const newProcessId = `process-${Date.now()}-${Math.floor(
+        Math.random() * 1000
+      )}`;
+      setProcessId(newProcessId); // Update the state
+      ws.send(JSON.stringify({ type: "processId", processId: newProcessId }));
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        // Use the ref's current value for comparison
+        if (data.processId && data.processId === processIdRef.current) {
+          setProgress(data.progress);
+          setStatusMessage(data.message);
+
+          if (data.progress === 100) {
+            setIsLoading(false); // Hide loader when process is complete
+            // Clear the quote update interval when loading is complete
+            clearInterval(quoteUpdateIntervalRef.current);
+          }
+        } else {
+          console.error(
+            "Message received for a different or undefined processId."
+          );
+        }
+      } catch (error) {
+        console.error("Error parsing message JSON:", error);
+      }
+    };
+
+    return () => ws.close();
   }, []);
 
   const handleUserDataChange = (e) => {
@@ -48,6 +130,10 @@ const PDFUploader = () => {
   };
 
   const handleSendOTP = async () => {
+    if (!userData.name || !userData.email || !userData.mobile) {
+      toast.error("Please fill in all the details");
+      return;
+    }
     try {
       await axios.post(`${process.env.REACT_APP_API_URL}/users/send-otp`, {
         mobile: userData.mobile,
@@ -55,38 +141,46 @@ const PDFUploader = () => {
       toast.success("OTP sent successfully!");
     } catch (error) {
       console.error("Error sending OTP:", error);
-      toast.error("Error sending OTP.");
+      // Adjust the error message based on the response from the server
+      const errorMessage =
+        error.response?.data?.message || "Error sending OTP.";
+      toast.error(errorMessage);
     }
   };
 
   const handleVerifyOTP = async () => {
     try {
       const response = await axios.post(
-        ` ${process.env.REACT_APP_API_URL}/users/verify-otp`,
-        { mobile: userData.mobile, code: userData.otp }
+        `${process.env.REACT_APP_API_URL}/users/verify-otp`,
+        {
+          sessionUuid: userData.sessionUuid,
+          otp: userData.otp,
+          mobile: userData.mobile,
+        } // Ensure you're passing sessionUuid now
       );
-      if (response.data.verification === "approved") {
+      if (response.status === 200) {
         setOtpPending(false);
         setOtpVerified(true);
         setShowOTPForm(false);
         await registerUser();
         toast.success("OTP verified successfully!");
       }
-      if (response.data.verification === "pending") {
+      if (response.status === 400) {
         setOtpPending(true);
+        setOtpVerified(false);
         toast.error("OTP incorrect!");
       }
     } catch (error) {
       console.error("Error verifying OTP:", error);
-      toast.error("Error verifying OTP.");
+      setOtpVerified(false);
+      // Adjust the error message based on the response from the server
+      const errorMessage =
+        error.response?.data?.message || "Error verifying OTP.";
+      toast.error(errorMessage);
     }
   };
 
   const registerUser = async () => {
-    if (!userData.name || !userData.email || !userData.mobile) {
-      toast.error("Please fill in all the details");
-      return;
-    }
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/users/register`,
@@ -100,6 +194,9 @@ const PDFUploader = () => {
       );
       if (response.data.message === "You have used your max allocated usage.") {
         setAttempts(false);
+        return toast.error(
+          "You have Used The Max Allocated Usage for This Number"
+        );
       }
     } catch (error) {
       console.error("Error registering user:", error);
@@ -108,6 +205,7 @@ const PDFUploader = () => {
 
   // Handles file upload
   const handleFileUpload = async (selectedFile) => {
+    setIsLoading(true);
     setAttempts(true);
     setOtpPending(false);
     setOtpVerified(false);
@@ -121,41 +219,31 @@ const PDFUploader = () => {
     });
     analysisSectionRef.current.scrollIntoView({ behavior: "smooth" });
 
+    ReactGA.event("file_upload", {
+      file_name: selectedFile.name,
+      content_type: selectedFile.type,
+    });
+
     const formData = new FormData();
     formData.append("file", selectedFile);
-    setProgress(20);
-    setIsLoading(true);
-    setStatusMessage("Uploading your resume...");
+    const config = {
+      onUploadProgress: () => {},
+      headers: { "Content-Type": "multipart/form-data" },
+    };
 
-    setTimeout(() => {
-      setProgress(40); // Set progress to 40% after file upload
-      setStatusMessage("Analysing your profile...");
-    }, 1000);
     try {
       // Upload PDF and process with OpenAI in one step
       const uploadResponse = await axios.post(
-        `${process.env.REACT_APP_API_URL}/pdfs/upload`,
+        `${process.env.REACT_APP_API_URL}/pdfs/upload?processId=${processId}`,
         formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
+        config
       );
 
-      // Wait for 2 seconds before simulating the AI processing
-      setTimeout(() => {
-        setProgress(60); // Set progress to 80% to simulate AI processing
-        setStatusMessage("Creating your personalized report...");
-
-        // Simulate the completion of AI processing after 2 more seconds
-        setTimeout(() => {
-          setUploadedPdfId(uploadResponse.data.pdfId); // Store the uploaded PDF ID
-          setOpenAIResponse(uploadResponse.data.openaiResponses); // Assuming the backend sends an array of OpenAI responses
-          setShowOTPForm(true);
-          toast.success("Response generated successfully!");
-          setStatusMessage("Done!");
-          setIsLoading(false); // Set loading to false when everything is done
-        }, 1000);
-      }, 2000);
+      setUploadedPdfId(uploadResponse.data.pdfId); // Store the uploaded PDF ID
+      setOpenAIResponse(uploadResponse.data.openaiResponses); // Assuming the backend sends an array of OpenAI responses
+      setShowOTPForm(true);
+      toast.success("Response generated successfully!");
+      setIsLoading(false);
     } catch (error) {
       console.error("Error uploading file:", error);
       toast.error(error.response.data.message);
@@ -174,7 +262,7 @@ const PDFUploader = () => {
 
   // Trigger hidden file input when button is clicked
   const handleButtonClick = () => {
-    fileInputRef.current.click();
+    analysisSectionRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
   const capitalizeFirstLetterOfEachWord = (str) => {
@@ -243,13 +331,7 @@ const PDFUploader = () => {
               alt="Logo"
               className="navbar-logo"
             />
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept="application/pdf"
-              style={{ display: "none" }}
-            />
+
             <button onClick={handleButtonClick} className="upload-button">
               Upload My Resume
             </button>
@@ -269,13 +351,7 @@ const PDFUploader = () => {
                 Discover Your Potential with Our Advanced Profile Evaluation
                 Tool. Upload Your Resume and Begin Your Journey.
               </p>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                accept="application/pdf"
-                style={{ display: "none" }}
-              />
+
               <button onClick={handleButtonClick} className="upload-button">
                 Upload My Resume
               </button>
@@ -290,7 +366,7 @@ const PDFUploader = () => {
           </h2>
           <div className="management-card-main">
             <div className="management-card">
-              <img src="/12.png" alt="image1" />
+              <img src="/12.png" alt="card1" />
               <h3 className="blue-color-text">Tailored Analysis:</h3>
               <p>
                 Receive a detailed analysis of your academic and professional
@@ -299,7 +375,7 @@ const PDFUploader = () => {
               </p>
             </div>
             <div className="management-card">
-              <img src="/15.png" alt="image1" />
+              <img src="/15.png" alt="card2" />
               <h3 className="blue-color-text">Insightful Feedback:</h3>
               <p>
                 Understand how your profile fits with management program
@@ -308,7 +384,7 @@ const PDFUploader = () => {
               </p>
             </div>
             <div className="management-card">
-              <img src="/14.png" alt="image1" />
+              <img src="/14.png" alt="card3" />
               <h3 className="blue-color-text">Simple and Effective:</h3>
               <p>
                 Just upload your resume or CV, and our tool takes care of the
@@ -318,94 +394,7 @@ const PDFUploader = () => {
           </div>
         </div>
 
-        {/* <div className="how-to-use-section">
-          <h2>
-            How to Use this Tool to Evaluate Your Profile and{" "}
-            <span className="blue-color-text">Plan Your Next Steps</span>
-          </h2>
-          <div className="cards-container">
-            <div className="card">
-              <img
-                src="https://lh3.googleusercontent.com/olj0WNmHgUOjQYpi8WjfHZEG95Ny7MQqZUplro5kSgy8UviHO0cRgROUK2fQDfiCdqvXlqNqJcwx98lWeDe2Xr080tkDK-mnCw=s0"
-                width="80"
-                alt=""
-              />
-              <div>
-                <h3>Step 1: Fill Out a Brief Form</h3>
-                <p>
-                  Start your journey by providing some basic information about
-                  yourself and your career aspirations. This will help us tailor
-                  the evaluation to your unique profile.
-                </p>
-              </div>
-            </div>
-            <div className="card">
-              <img
-                src="https://lh3.googleusercontent.com/ly8yPCJu3jBCYghmMQdiwryUJz0_s6MfkyHBZ__9qHwyXiaAFmtUfK1erZq00bOiO1voJlfygoCdJlL9rnbry_Kh__-I1G6pXjQ=s0"
-                width="80"
-                alt=""
-              />
-
-              <div>
-                <h3>Step 2: Upload Your Resume/CV</h3>
-                <p>
-                  Attach your most recent resume or CV. Our tool uses this
-                  information to assess your academic background, professional
-                  experience, and extracurricular activities.
-                </p>
-              </div>
-            </div>
-            <div className="card">
-              <img
-                src="https://lh3.googleusercontent.com/Hgo4hXEglNPL3a3RCxsO8olfECbM0TdRJowG6HE0ltOwT-YZx9jivimyYZfmo2SGI9G608O0NhliqeuOGKQAh-e5Loe3rnj5o50=s0"
-                width="80"
-                alt=""
-              />
-
-              <div>
-                <h3>Step 3: Wait for Our AI to Do Its Magic</h3>
-                <p>
-                  Sit back and relax while our advanced AI analyzes your
-                  details. It cross references your profile with management
-                  program criteria to provide a comprehensive evaluation.
-                </p>
-              </div>
-            </div>
-            <div className="card">
-              <img
-                src="https://lh3.googleusercontent.com/_5-f_4KVVazwOzzDFjL47Oiq1P6mhmbGES82m_m1AAITzIC4yq3EMUfVux1EN09Z2IKC_CEL0VZXwRvm_d5aVEwPgbu8KteKyvVE=s0"
-                width="80"
-                alt=""
-              />
-
-              <div>
-                <h3>Step 4: View Your Analysis</h3>
-                <p>
-                  Receive a detailed report on your fitment for management
-                  programs. Understand your strengths, areas for improvement,
-                  and how you compare to typical program candidates
-                </p>
-              </div>
-            </div>
-            <div className="card">
-              <img
-                src="https://lh3.googleusercontent.com/CpXc5hbW4jh9PxeAJP9uAtsWG9LtlAAZGKdzjkFEGabYiFjGeQjRVBdmVxXS9zvbzmVouyO0PkJsxXX5uCpCkL2eHly1HgZjag=s0"
-                width="80"
-                alt=""
-              />
-
-              <div>
-                <h3>Step 5: Schedule a Call with an Expert</h3>
-                <p>
-                  Take it further by scheduling a consultation with one of our
-                  experts. They will help you interpret your results and discuss
-                  your next steps towards management success.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div> */}
-        <div style={{ marginTop: "70px" }}>
+        <div className="how-it-works-parent">
           <h2 className="section-title">
             <span className="blue-color-text">How It Works: </span>
             Your Path to Management Program Readiness
@@ -413,135 +402,134 @@ const PDFUploader = () => {
           <HowItWorks />
         </div>
       </div>
-      <hr className="custom-hr" />
-
-      <div ref={analysisSectionRef} className="analysis-section">
-        <h2 className="section-title">
-          Resume <span className="blue-color-text">Analysis</span>
-        </h2>
-        <Toaster position="top-right" />
-        <div className="upload-section">
-          <div
-            className="drag-drop-box"
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            onClick={handleButtonClick}
-          >
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept="application/pdf"
-              style={{ display: "none" }}
-            />
-            <img
-              src="/upload.png"
-              alt="Upload Icon"
-              width={100}
-              className="upload-icon"
-            />
-            <p>Drag and drop, or click to upload</p>
-          </div>
-
-          {openAIResponse && openAIResponse.length > 0 && (
-            <div>
-              <div className="ai-response-box">
-                <p>{getLimitedWords(openAIResponse[0])}</p>
-              </div>
-              {showOTPForm && (
-                <p>If you wish to know more, please register the form.</p>
-              )}
+      <div className="analysis-section-parent">
+        <div ref={analysisSectionRef} className="analysis-section">
+          <h2 className="section-title">
+            Resume <span className="blue-color-text">Analysis</span>
+          </h2>
+          <Toaster position="top-right" duration="4000" />
+          <div className="upload-section">
+            <div
+              className="drag-drop-box"
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              onClick={handleButtonClick}
+            >
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="application/pdf"
+                style={{ display: "none" }}
+              />
+              <img
+                src="/Group-179.png"
+                alt="Upload Icon"
+                width={100}
+                className="upload-icon"
+              />
+              <p>Drag and drop, or click to upload</p>
             </div>
-          )}
 
-          {attempts && showOTPForm && (
-            <div className="form-main">
-              <input
-                className="form-input"
-                type="text"
-                name="name"
-                placeholder="Name"
-                onChange={handleUserDataChange}
-              />
-              <input
-                className="form-input"
-                type="email"
-                name="email"
-                placeholder="Email"
-                onChange={handleUserDataChange}
-              />
-              <div className="form-row">
-                <PhoneInput
-                  country={"in"}
-                  value={userData.mobile}
-                  onChange={handleMobileChange}
-                  containerClass="phone-container"
-                  inputClass="phone-input"
-                />
-                <button
-                  className="otp-button send-otp"
-                  onClick={handleSendOTP}
-                  disabled={otpVerified}
-                >
-                  Send OTP
-                </button>
+            {openAIResponse && openAIResponse.length > 0 && (
+              <div>
+                <div className="ai-response-box">
+                  <p>{getLimitedWords(openAIResponse[0])}</p>
+                </div>
+                {showOTPForm && (
+                  <p>If you wish to know more, please register the form.</p>
+                )}
               </div>
-              <div className="form-row">
+            )}
+
+            {attempts && showOTPForm && (
+              <div className="form-main">
                 <input
-                  className="otp-input"
+                  className="form-input"
                   type="text"
-                  name="otp"
-                  placeholder="OTP"
+                  name="name"
+                  placeholder="Name"
                   onChange={handleUserDataChange}
                 />
+                <input
+                  className="form-input"
+                  type="email"
+                  name="email"
+                  placeholder="Email"
+                  onChange={handleUserDataChange}
+                />
+                <div className="form-row">
+                  <PhoneInput
+                    country={"in"}
+                    value={userData.mobile}
+                    onChange={handleMobileChange}
+                    containerClass="phone-container"
+                    inputClass="phone-input"
+                  />
+                  <button
+                    className="otp-button send-otp"
+                    onClick={handleSendOTP}
+                    disabled={otpVerified}
+                  >
+                    Send OTP
+                  </button>
+                </div>
+                <div className="form-row">
+                  <input
+                    className="otp-input"
+                    type="text"
+                    name="otp"
+                    placeholder="OTP"
+                    onChange={handleUserDataChange}
+                  />
+                  <button
+                    className="otp-button verify-otp"
+                    onClick={handleVerifyOTP}
+                    disabled={otpVerified}
+                  >
+                    Verify OTP
+                  </button>
+                </div>
+                {otpVerified && (
+                  <div className="status-message success">
+                    OTP Verified Successfully
+                  </div>
+                )}
+                {otpPending && (
+                  <div className="status-message error">
+                    Please enter correct OTP
+                  </div>
+                )}
+              </div>
+            )}
+
+            {attempts && otpVerified && (
+              <div className="download-button-container">
                 <button
-                  className="otp-button verify-otp"
-                  onClick={handleVerifyOTP}
-                  disabled={otpVerified}
+                  className="upload-button"
+                  onClick={downloadAIResponsePdf}
                 >
-                  Verify OTP
+                  Download Response
                 </button>
               </div>
-              {otpVerified && (
-                <div className="status-message success">
-                  OTP Verified Successfully
-                </div>
-              )}
-              {otpPending && (
-                <div className="status-message error">
-                  Please enter correct OTP
-                </div>
-              )}
-            </div>
-          )}
+            )}
 
-          {!attempts && (
-            <p className="usage-message">
-              You have used your max allocated usage.
-            </p>
-          )}
-          {attempts && otpVerified && (
-            <div className="download-button-container">
-              <button className="upload-button" onClick={downloadAIResponsePdf}>
-                Download Response
-              </button>
-            </div>
-          )}
-
-          {isLoading && (
-            <div className="progress-bar-container">
-              <div className="progress">
-                <div
-                  className="progress-bar"
-                  style={{ width: `${progress}%` }}
-                ></div>
+            {isLoading && (
+              <div className="progress-bar-container">
+                <div className="progress">
+                  <div
+                    className="progress-bar"
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+                <p>{statusMessage}</p>
+                <p className="motivational-quote">{currentQuote}</p>{" "}
               </div>
-              <p>{statusMessage}</p>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
-      <hr className="custom-hr" />
+
       <div className="insights-section-main">
         <div className="insights-section">
           <h2>Ready to Turn Insights into Action?</h2>

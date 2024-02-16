@@ -49,14 +49,17 @@ footer {
   background-image: "Reactangle1.png";
 }
 
-.profile-eval-parent {
-  /* Adjust the file extension if necessary */
+.profile-eval-parent,
+.how-it-works-parent {
+  background-image: url("../public/bg-3.webp");
   background-size: cover; /* Cover ensures that the background covers the entire section */
   background-position: center; /* Center the image in the section */
   width: 100%; /* Full width */
   height: 100%; /* Adju */
 }
-
+.how-it-works-parent {
+  padding-top: 50px;
+}
 .text-container {
   /* flex: 0.6; */
   margin-left: 20px;
@@ -188,12 +191,19 @@ footer {
 .how-to-use-section h2 {
   margin: 20px 0px 40px 0px;
 }
+.analysis-section-parent {
+  background-image: url("../public/background-2.png");
+  background-size: cover; /* Cover ensures that the background covers the entire section */
+  background-position: center; /* Center the image in the section */
+  width: 100%; /* Full width */
+  height: 100%; /* Adju */
+}
 
 .analysis-section {
-  padding: 20px 0px;
+  padding: 40px 0px;
   text-align: center; /* Center the content */
   width: 75%;
-  margin: auto; /* Centers the section */
+  margin: 0px auto; /* Centers the section */
 }
 
 .section-title {
@@ -234,14 +244,6 @@ width: 50px; / Adjust as needed */
   margin-bottom: 15px;
 }
 
-.custom-hr {
-  height: 0px;
-  background-color: lightgray; /* Light gray color */
-  border: none; /* Removes default border */
-  width: 75%; /* 75% of the parent element's width */
-  margin: 20px auto; /* 20px top and bottom margin, auto centers it horizontally */
-}
-
 .section-title {
   text-align: center;
   width: 75%;
@@ -272,62 +274,67 @@ width: 50px; / Adjust as needed */
   height: auto;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
-
+/* Container for the progress bar adds a border, shadow for depth, and padding */
 .progress-bar-container {
-  width: 75%;
+  width: 100%;
+  max-width: 600px; /* Adjust based on your layout */
   margin: 20px auto;
-  /* Light gray background */
-  border-radius: 5px;
-  position: relative;
+  padding: 15px;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
+/* The background of the progress area */
 .progress {
-  overflow: hidden;
+  background-color: #e9ecef;
+  border-radius: 5px;
   height: 20px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  background-image: linear-gradient(to bottom, #ccc 0%, #ddd 100%);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
+/* The filled portion of the progress bar */
 .progress-bar {
-  width: 0%;
+  width: 0%; /* Initial width */
   height: 100%;
-  float: left;
-  box-sizing: border-box;
-  background-color: #79b;
-  background-size: 40px 40px;
-  border-radius: 10px 0 0 10px;
+  background-color: #007bff;
+  border-radius: 5px;
+  transition: width 0.6s ease;
   background-image: linear-gradient(
     45deg,
-    rgba(255, 255, 255, 0.2) 30%,
-    rgba(0, 0, 0, 0.1) 30%,
-    rgba(0, 0, 0, 0.1) 34%,
-    transparent 34%,
-    transparent 46%,
-    rgba(0, 0, 0, 0.1) 46%,
-    rgba(0, 0, 0, 0.1) 50%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(255, 255, 255, 0.2) 80%,
-    rgba(0, 0, 0, 0.1) 80%,
-    rgba(0, 0, 0, 0.1) 84%,
-    transparent 84%,
-    transparent 96%,
-    rgba(0, 0, 0, 0.1) 96%,
-    rgba(0, 0, 0, 0.1)
+    rgba(255, 255, 255, 0.15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.15) 75%,
+    transparent 75%,
+    transparent
   );
-  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-  transition: width 200ms ease;
-  animation: progress-bar-animate 1s linear infinite;
+  background-size: 1rem 1rem;
 }
 
-@keyframes progress-bar-animate {
-  from {
-    background-position: 40px 0;
-  }
-  to {
+/* Style for the motivational quote */
+.motivational-quote {
+  text-align: left; /* Ensures alignment to the left */
+  margin-top: 10px; /* Spacing between the progress bar and the quote */
+  color: #6c757d; /* A muted color for the text */
+  font-style: italic; /* Optional: Make it italic for emphasis */
+}
+
+/* Modernize the animation */
+@keyframes loading {
+  0% {
     background-position: 0 0;
   }
+  100% {
+    background-position: 50px 50px;
+  }
+}
+
+/* Apply the animation to the progress bar */
+.progress-bar {
+  animation: loading 2s linear infinite;
 }
 
 .ai-response-box {
