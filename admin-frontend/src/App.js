@@ -62,9 +62,23 @@ const AdminPanel = () => {
   };
 
   // Format date or return placeholder
-  const formatDate = (date) => {
-    return date ? new Date(date).toLocaleString() : "Not Available";
+  const formatDate = (isoDateString) => {
+    if (!isoDateString) return "Not Available";
+
+    // Split the ISO string at "T" to separate date and time, and then remove the "Z" and milliseconds
+    const [date, timeWithZ] = isoDateString.split("T");
+    const time = timeWithZ.split(".")[0]; // Remove milliseconds and "Z"
+
+    // Reformat date from "YYYY-MM-DD" to "MM/DD/YYYY"
+    const [year, month, day] = date.split("-");
+    const formattedDate = [month, day, year].join("/");
+
+    return `${formattedDate}, ${time}`;
   };
+
+  const sortedUserDetails = [...userDetails].sort((a, b) => {
+    return new Date(b.updated_at) - new Date(a.updated_at);
+  });
 
   if (!isLoggedIn) {
     return (
@@ -107,7 +121,7 @@ const AdminPanel = () => {
             </tr>
           </thead>
           <tbody>
-            {userDetails.map((user) => (
+            {sortedUserDetails.map((user) => (
               <tr key={user._id}>
                 <td>{user.name || "Unregistered"}</td>
                 <td>{user.email || "N/A"}</td>
