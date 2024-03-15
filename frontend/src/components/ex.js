@@ -4,7 +4,6 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import toast, { Toaster } from "react-hot-toast";
 import HowItWorks from "./HowItWorks";
-import ReactGA from "react-ga4";
 
 const PDFUploader = () => {
   const [uploadedPdfId, setUploadedPdfId] = useState(null);
@@ -28,33 +27,8 @@ const PDFUploader = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [statusMessage, setStatusMessage] = useState("");
-  const [processId, setProcessId] = useState("");
   const fileInputRef = useRef(null);
   const analysisSectionRef = useRef(null);
-
-  // Ref for keeping the up-to-date processId
-  const processIdRef = useRef(processId);
-
-  const [currentQuote, setCurrentQuote] = useState("");
-
-  const quotes = [
-    "GMAT/GRE scores are key in MBA applications, showcasing academic readiness.",
-    "Programs like Harvard and Stanford assess candidates holistically, valuing essays and work experience.",
-    "Campus visits and info sessions are crucial for understanding a program's culture.",
-    "Recommendation letters provide deep insights into an applicant's professional skills.",
-    "MBA essays highlight personal journeys and career goals, aligning with program benefits.",
-    "Interviews are pivotal, testing communication skills and program fit.",
-    "Financial planning, including scholarships, is crucial for high ROI schools like INSEAD.",
-    "Specializations matter; MIT Sloan is known for innovation and entrepreneurship.",
-    "Early application rounds often offer better admission and scholarship chances.",
-    "Engaging with alumni offers valuable insights into program experiences.",
-  ];
-
-  // Function to select a random quote
-  const updateQuote = () => {
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    setCurrentQuote(quotes[randomIndex]);
-  };
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
@@ -63,62 +37,6 @@ const PDFUploader = () => {
       campaign: queryParams.get("utm_campaign") || "",
       medium: queryParams.get("utm_medium") || "",
     });
-  }, []);
-
-  useEffect(() => {
-    processIdRef.current = processId;
-  }, [processId]);
-
-  // Define a ref to store the quote update interval ID
-  const quoteUpdateIntervalRef = useRef(null);
-
-  useEffect(() => {
-    updateQuote();
-
-    quoteUpdateIntervalRef.current = setInterval(() => {
-      updateQuote(); // Call your function to update the quote
-    }, 4500);
-
-    return () => {
-      clearInterval(quoteUpdateIntervalRef.current); // Clear the interval on component unmount
-    };
-  }, []); // Empty dependency array ensures this effect runs only once on mount
-
-  useEffect(() => {
-    const ws = new WebSocket(`wss:${process.env.REACT_APP_WEB_SOCKET_API_URL}`);
-
-    ws.onopen = () => {
-      const newProcessId = `process-${Date.now()}-${Math.floor(
-        Math.random() * 1000
-      )}`;
-      setProcessId(newProcessId); // Update the state
-      ws.send(JSON.stringify({ type: "processId", processId: newProcessId }));
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        // Use the ref's current value for comparison
-        if (data.processId && data.processId === processIdRef.current) {
-          setProgress(data.progress);
-          setStatusMessage(data.message);
-
-          if (data.progress === 100) {
-            setIsLoading(false); // Hide loader when process is complete
-            // Clear the quote update interval when loading is complete
-            clearInterval(quoteUpdateIntervalRef.current);
-          }
-        } else {
-          console.error(
-            "Message received for a different or undefined processId."
-          );
-        }
-      } catch (error) {
-        console.error("Error parsing message JSON:", error);
-      }
-    };
-
-    return () => ws.close();
   }, []);
 
   const handleUserDataChange = (e) => {
@@ -130,10 +48,6 @@ const PDFUploader = () => {
   };
 
   const handleSendOTP = async () => {
-    if (!userData.name || !userData.email || !userData.mobile) {
-      toast.error("Please fill in all the details");
-      return;
-    }
     try {
       await axios.post(`${process.env.REACT_APP_API_URL}/users/send-otp`, {
         mobile: userData.mobile,
@@ -141,46 +55,38 @@ const PDFUploader = () => {
       toast.success("OTP sent successfully!");
     } catch (error) {
       console.error("Error sending OTP:", error);
-      // Adjust the error message based on the response from the server
-      const errorMessage =
-        error.response?.data?.message || "Error sending OTP.";
-      toast.error(errorMessage);
+      toast.error("Error sending OTP.");
     }
   };
 
   const handleVerifyOTP = async () => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/users/verify-otp`,
-        {
-          sessionUuid: userData.sessionUuid,
-          otp: userData.otp,
-          mobile: userData.mobile,
-        } // Ensure you're passing sessionUuid now
+        ` ${process.env.REACT_APP_API_URL}/users/verify-otp`,
+        { mobile: userData.mobile, code: userData.otp }
       );
-      if (response.status === 200) {
+      if (response.data.verification === "approved") {
         setOtpPending(false);
         setOtpVerified(true);
         setShowOTPForm(false);
         await registerUser();
         toast.success("OTP verified successfully!");
       }
-      if (response.status === 400) {
+      if (response.data.verification === "pending") {
         setOtpPending(true);
-        setOtpVerified(false);
         toast.error("OTP incorrect!");
       }
     } catch (error) {
       console.error("Error verifying OTP:", error);
-      setOtpVerified(false);
-      // Adjust the error message based on the response from the server
-      const errorMessage =
-        error.response?.data?.message || "Error verifying OTP.";
-      toast.error(errorMessage);
+      toast.error("Error verifying OTP.");
     }
   };
 
   const registerUser = async () => {
+    if (!userData.name || !userData.email || !userData.mobile) {
+      toast.error("Please fill in all the details");
+      return;
+    }
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/users/register`,
@@ -194,9 +100,6 @@ const PDFUploader = () => {
       );
       if (response.data.message === "You have used your max allocated usage.") {
         setAttempts(false);
-        return toast.error(
-          "You have Used The Max Allocated Usage for This Number"
-        );
       }
     } catch (error) {
       console.error("Error registering user:", error);
@@ -205,7 +108,6 @@ const PDFUploader = () => {
 
   // Handles file upload
   const handleFileUpload = async (selectedFile) => {
-    setIsLoading(true);
     setAttempts(true);
     setOtpPending(false);
     setOtpVerified(false);
@@ -219,33 +121,41 @@ const PDFUploader = () => {
     });
     analysisSectionRef.current.scrollIntoView({ behavior: "smooth" });
 
-    ReactGA.event("file_upload", {
-      file_name: selectedFile.name,
-      content_type: selectedFile.type,
-    });
-
     const formData = new FormData();
     formData.append("file", selectedFile);
-    const config = {
-      onUploadProgress: () => {},
-      headers: { "Content-Type": "multipart/form-data" },
-    };
-
     setProgress(20);
+    setIsLoading(true);
     setStatusMessage("Uploading your resume...");
+
+    setTimeout(() => {
+      setProgress(40); // Set progress to 40% after file upload
+      setStatusMessage("Analysing your profile...");
+    }, 1000);
     try {
       // Upload PDF and process with OpenAI in one step
       const uploadResponse = await axios.post(
-        `${process.env.REACT_APP_API_URL}/pdfs/upload?processId=${processId}`,
+        `${process.env.REACT_APP_API_URL}/pdfs/upload`,
         formData,
-        config
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
       );
 
-      setUploadedPdfId(uploadResponse.data.pdfId); // Store the uploaded PDF ID
-      setOpenAIResponse(uploadResponse.data.openaiResponses); // Assuming the backend sends an array of OpenAI responses
-      setShowOTPForm(true);
-      toast.success("Response generated successfully!");
-      setIsLoading(false);
+      // Wait for 2 seconds before simulating the AI processing
+      setTimeout(() => {
+        setProgress(60); // Set progress to 80% to simulate AI processing
+        setStatusMessage("Creating your personalized report...");
+
+        // Simulate the completion of AI processing after 2 more seconds
+        setTimeout(() => {
+          setUploadedPdfId(uploadResponse.data.pdfId); // Store the uploaded PDF ID
+          setOpenAIResponse(uploadResponse.data.openaiResponses); // Assuming the backend sends an array of OpenAI responses
+          setShowOTPForm(true);
+          toast.success("Response generated successfully!");
+          setStatusMessage("Done!");
+          setIsLoading(false); // Set loading to false when everything is done
+        }, 1000);
+      }, 2000);
     } catch (error) {
       console.error("Error uploading file:", error);
       toast.error(error.response.data.message);
@@ -264,7 +174,7 @@ const PDFUploader = () => {
 
   // Trigger hidden file input when button is clicked
   const handleButtonClick = () => {
-    analysisSectionRef.current.scrollIntoView({ behavior: "smooth" });
+    fileInputRef.current.click();
   };
 
   const capitalizeFirstLetterOfEachWord = (str) => {
@@ -323,22 +233,23 @@ const PDFUploader = () => {
     );
   };
 
-  const triggerFileInputClick = () => {
-    fileInputRef.current.click();
-  };
   return (
     <div className="mian_container">
       <div>
         <nav>
           <div className="navbar">
-            <a href="https://crackverbals-6.webflow.io/">
-              <img
-                src="/crackverbal-logo.png"
-                alt="Logo"
-                className="navbar-logo"
-              />
-            </a>
-
+            <img
+              src="https://lh3.googleusercontent.com/4MwUs0FiiSAX_d8ORJWpmp-xn1ifvguLFtr-x7vu_Km6CvmXUzE_pmbRW90uLOiPwbEneFAeXaJ-8gwtT2nAdVLsSYIsod2MrD8=s0"
+              alt="Logo"
+              className="navbar-logo"
+            />
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="application/pdf"
+              style={{ display: "none" }}
+            />
             <button onClick={handleButtonClick} className="upload-button">
               Upload My Resume
             </button>
@@ -358,7 +269,13 @@ const PDFUploader = () => {
                 Discover Your Potential with Our Advanced Profile Evaluation
                 Tool. Upload Your Resume and Begin Your Journey.
               </p>
-
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="application/pdf"
+                style={{ display: "none" }}
+              />
               <button onClick={handleButtonClick} className="upload-button">
                 Upload My Resume
               </button>
@@ -414,13 +331,13 @@ const PDFUploader = () => {
           <h2 className="section-title">
             Resume <span className="blue-color-text">Analysis</span>
           </h2>
-          <Toaster position="top-right" duration="4000" />
+          <Toaster position="top-right" />
           <div className="upload-section">
             <div
               className="drag-drop-box"
               onDragOver={handleDragOver}
               onDrop={handleDrop}
-              onClick={triggerFileInputClick}
+              onClick={handleButtonClick}
             >
               <input
                 type="file"
@@ -510,6 +427,11 @@ const PDFUploader = () => {
               </div>
             )}
 
+            {!attempts && (
+              <p className="usage-message">
+                You have used your max allocated usage.
+              </p>
+            )}
             {attempts && otpVerified && (
               <div className="download-button-container">
                 <button
@@ -530,7 +452,6 @@ const PDFUploader = () => {
                   ></div>
                 </div>
                 <p>{statusMessage}</p>
-                <p className="motivational-quote">{currentQuote}</p>{" "}
               </div>
             )}
           </div>
@@ -557,33 +478,6 @@ const PDFUploader = () => {
           </button>
         </div>
       </div>
-      <footer>
-        <div className="footer">
-          <a href="https://crackverbals-6.webflow.io/">
-            <img
-              src="/crackverbal-logo.png"
-              alt="Logo"
-              className="navbar-logo"
-            />
-          </a>
-          <div className="footer-list-item">
-            <div>
-              <a href="https://crackverbals-6.webflow.io/">
-                © 2024 Crackverbal
-              </a>
-            </div>
-            <div>
-              <a href="https://crackverbals-6.webflow.io/">Terms</a>{" "}
-            </div>
-            <div>
-              <a href="https://crackverbals-6.webflow.io/">Privacy</a>
-            </div>
-            <div>
-              <a href="https://crackverbals-6.webflow.io/">Cookies</a>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

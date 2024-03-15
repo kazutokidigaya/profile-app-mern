@@ -12,7 +12,7 @@ export default function HowItWorks() {
           />
         </div>
         <div className="timeline__event__date" style={{ color: "white" }}>
-          Step 1
+          1
         </div>
         <div className="timeline__event__content">
           <div className="timeline__event__title">Upload Your Resume/CV:</div>
@@ -36,7 +36,7 @@ export default function HowItWorks() {
           />
         </div>
         <div className="timeline__event__date" style={{ color: "white" }}>
-          Step 2
+          2
         </div>
         <div className="timeline__event__content">
           <div className="timeline__event__title">AI-Powered Analysis:</div>
@@ -58,12 +58,12 @@ export default function HowItWorks() {
           />
         </div>
         <div style={{ color: "white" }} className="timeline__event__date">
-          Step 3
+          3
         </div>
         <div className="timeline__event__content">
           <div className="timeline__event__title">Fill Out a Brief Form:</div>
           <div className="timeline__event__description">
-            <p style={{ padding: "15px" }}>
+            <p style={{ paddingTop: "15px", paddingBottom: "15px" }}>
               Provide basic information to personalize your report and help us
               get in touch with you.
             </p>
@@ -79,7 +79,7 @@ export default function HowItWorks() {
           />
         </div>
         <div style={{ color: "white" }} className="timeline__event__date">
-          Step 4
+          4
         </div>
         <div className="timeline__event__content">
           <div className="timeline__event__title">
@@ -102,7 +102,7 @@ export default function HowItWorks() {
           />
         </div>
         <div style={{ color: "white" }} className="timeline__event__date">
-          Step 5
+          5
         </div>
         <div className="timeline__event__content">
           <div className="timeline__event__title">

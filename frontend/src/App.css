@@ -1,27 +1,18 @@
-nav,
-footer {
-  width: 100%;
-  background-color: #f1f7ff;
-}
 .navbar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 10px;
-}
-footer {
-  margin-top: 50px;
-}
-
-.footerbar {
-  display: flex;
+  gap: 40rem;
   justify-content: space-evenly;
   align-items: center;
-  padding: 35px 60px;
+  padding: 2rem;
+  background-color: #f1f7ff;
 }
 
+a {
+  text-decoration: none;
+  color: #868fa1;
+}
 .navbar-logo {
-  height: 50px;
+  max-width: 200px;
 }
 
 .upload-button:hover {
@@ -30,8 +21,6 @@ footer {
   color: #0029e4;
 }
 
-.navbar,
-.footerbar,
 .management-journey-section,
 .how-to-use-section,
 .insights-section {
@@ -41,6 +30,7 @@ footer {
 .profile-evaluation-section {
   padding: 35px 60px;
   display: flex;
+  gap: 5vw;
   justify-content: center;
   align-items: center;
   width: 85%; /* Sets width to 60% for these sections */
@@ -87,7 +77,6 @@ footer {
   border-radius: 100px;
   font-size: 18px;
   max-width: 350px;
-  margin: 35px 10px 30px 0px;
 }
 
 .upload-button-white {
@@ -115,8 +104,8 @@ footer {
 }
 
 .image-container img {
-  width: auto;
-  height: auto;
+  width: 110%;
+  height: 100%;
   max-height: 100%; /* Keep image height within the container */
   border-radius: 20px;
 }
@@ -132,12 +121,14 @@ footer {
 }
 .management-card-main {
   display: flex;
-  text-align: left;
+  gap: 2rem;
+  text-align: justify;
   padding: 10px;
   flex-wrap: wrap; /* Allow cards to wrap to the next row */
-  align-items: center;
+  align-items: start;
   justify-content: center;
 }
+
 .management-card img {
   width: 15%;
   margin-bottom: 10px;
@@ -145,11 +136,16 @@ footer {
 
 .management-card h3 {
   margin-bottom: 10px;
+  text-align: left;
 }
 .management-card {
   width: 100%; /* By default, each card takes the full width in mobile view */
   margin-bottom: 20px; /* Add some spacing between cards */
-  padding: 15px;
+  min-width: 400px;
+  min-height: 300px;
+  padding: 2.5rem;
+  border-radius: 25px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 
   @media (min-width: 768px) {
     width: calc(
@@ -157,14 +153,7 @@ footer {
     ); /* Show 2 cards in a row on tablets with some spacing */
     margin-right: 20px; /* Add spacing between cards */
     margin-bottom: 10px;
-  }
-
-  @media (min-width: 768px) {
-    width: calc(
-      50% - 10px
-    ); /* Show 2 cards in a row on tablets with some spacing */
-    margin-right: 20px; /* Add spacing between cards */
-    margin-bottom: 10px;
+    padding: 2.5rem;
   }
 
   @media (min-width: 1024px) {
@@ -179,6 +168,7 @@ footer {
 .management-card-main {
   width: 75%;
   margin: auto; /* Centers the section */
+  padding: 35px 0;
 }
 
 .how-to-use-section {
@@ -459,7 +449,8 @@ width: 50px; / Adjust as needed */
 }
 
 .insights-section p {
-  text-align: center;
+  text-align: justify;
+  align-items: center;
   color: white;
   width: 60%;
   margin: auto;
@@ -474,6 +465,22 @@ width: 50px; / Adjust as needed */
   color: #4caf50;
   border: 1px solid #4caf50;
 }
+
+.footer {
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.footer-list-item {
+  cursor: pointer;
+  color: #868fa1;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: auto auto auto auto;
+}
+
 /* Responsive adjustments */
 
 @media (max-width: 1300px) {
@@ -485,6 +492,13 @@ width: 50px; / Adjust as needed */
 @media (max-width: 1200px) {
   .image-container {
     min-height: 200px; /* Adjust for smaller screens */
+  }
+  .analysis-section-parent {
+    background-image: none;
+    background-color: #f1f7ff;
+  }
+  .drag-drop-box {
+    background-color: white;
   }
 }
 
@@ -560,16 +574,6 @@ width: 50px; / Adjust as needed */
     margin-bottom: 10px;
   }
 
-  .navbar,
-  .footerbar {
-    flex-direction: column;
-    padding: 20px;
-  }
-
-  .navbar-logo {
-    margin-bottom: 20px;
-  }
-
   .profile-evaluation-section {
     flex-direction: column;
   }
@@ -583,11 +587,30 @@ width: 50px; / Adjust as needed */
   .management-card img {
     width: 20%;
   }
+  .footer {
+    flex-direction: column;
+  }
+  .footer-list-item {
+    padding: 1.5rem;
+  }
 }
 
 @media (max-width: 425px) {
   .upload-section {
     width: 95%;
+  }
+  .management-card {
+    min-width: 250px;
+    min-height: 250px;
+    padding: 1.5rem;
+  }
+  .upload-button,
+  .upload-button-white {
+    padding: 10px 20px;
+  }
+  .footer-list-item {
+    display: flex;
+    flex-direction: column;
   }
 }
 
