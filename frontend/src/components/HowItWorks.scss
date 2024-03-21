@@ -71,6 +71,7 @@ $color6: #0029e4;
       border: 4px solid #bedaff;
       display: flex;
       align-items: center;
+      z-index: 8;
       justify-content: center;
       color: $color1;
       padding: $spacing;
@@ -89,8 +90,8 @@ $color6: #0029e4;
       &:before {
         content: "";
         width: 4px;
-        height: 198%;
-        background: #bedaff;
+        height: 156%;
+        background: #0029e4;
         position: absolute;
         top: 0%;
         z-index: -1;
@@ -101,7 +102,7 @@ $color6: #0029e4;
       &:after {
         content: "";
         width: 100%;
-        height: 4px #bedaff;
+        height: 4px #0029e4;
         position: absolute;
         left: 0%;
         z-index: -1;
@@ -116,7 +117,7 @@ $color6: #0029e4;
 
     &--type2 {
       &:after {
-        background: #bedaff;
+        background: #0029e4;
       }
       .timeline__event__date {
         background: $color4;
@@ -128,7 +129,7 @@ $color6: #0029e4;
         .timeline__event__icon {
           &:before,
           &:after {
-            background: #bedaff;
+            background: #0029e4;
           }
         }
       }
@@ -139,7 +140,7 @@ $color6: #0029e4;
         color: $color4;
         &:before,
         &:after {
-          background: #bedaff;
+          background: #0029e4;
         }
       }
       .timeline__event__title {
@@ -151,7 +152,7 @@ $color6: #0029e4;
 
     &--type3 {
       &:after {
-        background: #bedaff;
+        background: #0029e4;
         width: 4px;
         height: 4px;
       }
@@ -165,7 +166,7 @@ $color6: #0029e4;
         .timeline__event__icon {
           &:before,
           &:after {
-            background: #bedaff;
+            background: #0029e4;
           }
         }
       }
@@ -201,6 +202,7 @@ $color6: #0029e4;
     align-self: center;
     &__content {
       width: 100%;
+      text-align: justify;
     }
 
     &__icon {

@@ -390,7 +390,7 @@ const PDFUploader = () => {
                 improvement.
               </p>
             </div>
-            <div className="management-card" style={{ paddingBottom: "7.5vh" }}>
+            <div className="management-card">
               <img src="/14.png" alt="card3" />
               <h3 className="blue-color-text">Simple and Effective:</h3>
               <p>

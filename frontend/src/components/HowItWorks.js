@@ -94,7 +94,7 @@ export default function HowItWorks() {
             Consultation with an Expert:
           </div>
           <div className="timeline__event__description">
-            <p style={{ padding: "8.1px" }}>
+            <p>
               Schedule a call with a career expert to delve deeper into your
               results and discuss strategies for your management career journey.
             </p>
