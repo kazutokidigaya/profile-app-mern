@@ -84,7 +84,8 @@ a {
   cursor: pointer;
   background-color: white; /* Adjust the color as needed */
   color: #0029e4;
-  border: none;
+
+  border: 1px solid #0029e4;
   border-radius: 100px;
   font-size: 18px;
   max-width: 450px;
@@ -130,7 +131,7 @@ a {
 }
 
 .management-card img {
-  width: 15%;
+  width: 25%;
   margin-bottom: 10px;
 }
 
@@ -437,7 +438,8 @@ width: 50px; / Adjust as needed */
 }
 
 .insights-section-main {
-  background: #0029e4;
+  background: #f1f7ff;
+  border: 2px solid #0029e4;
   padding: 5px;
   width: 100%;
   border-radius: 50px 50px 0 0;
@@ -445,14 +447,14 @@ width: 50px; / Adjust as needed */
 
 .insights-section {
   text-align: center;
-  color: white;
+  color: black;
 }
 
 .insights-section p {
-  text-align: justify;
+  text-align: center;
   align-items: center;
-  color: white;
-  width: 60%;
+  color: black;
+
   margin: auto;
 }
 

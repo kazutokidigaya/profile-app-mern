@@ -6,10 +6,7 @@ export default function HowItWorks() {
     <div className="timeline">
       <div className="timeline__event animated fadeInUp delay-3s timeline__event--type1">
         <div className="timeline__event__icon">
-          <img
-            src="https://lh3.googleusercontent.com/ppyLgfi8sLFXo6WxGEIJqaUjBpgLkXiGzChzn6o3s6yGdMr_T3uxpgR7_l2Dd_I2JMvONFT8cSLjH3Z2cHL4JAvui6NAWe7SAg=s0"
-            alt="Icon"
-          />
+          <img src="/icon-1.png" alt="Icon" width="80px" />
         </div>
         <div className="timeline__event__date" style={{ color: "white" }}>
           1
@@ -30,10 +27,7 @@ export default function HowItWorks() {
       {/* Example for Step 2 */}
       <div className="timeline__event animated fadeInUp delay-2s timeline__event--type2">
         <div className="timeline__event__icon">
-          <img
-            src="https://lh3.googleusercontent.com/XDh4_FB1BCNxUk-OHZs1dEs3xA1HgKUAGfxQF93NlVgdM2WacbsZbbnXscQrGaBuiPk-l3Gn8QUhPJ-OyEGFnLaNEj_iZ2AKhQY=s0"
-            alt="Icon"
-          />
+          <img src="/icon-2.png" alt="Icon" width="80px" />
         </div>
         <div className="timeline__event__date" style={{ color: "white" }}>
           2
@@ -52,10 +46,7 @@ export default function HowItWorks() {
 
       <div className="timeline__event animated fadeInUp delay-1s timeline__event--type3">
         <div className="timeline__event__icon">
-          <img
-            src="https://lh3.googleusercontent.com/CwuUQ6-7UcqyYnvKZEpcIPvgZkF4lxH4DTuauDen_RoaVXmEjTqexmV3Tr1cDF441uhGir--qvCd8xHJl0WrjFC0srv_FkB1JEs=s0"
-            alt="icon"
-          />
+          <img src="/icon-3.png" alt="Icon" width="80px" />
         </div>
         <div style={{ color: "white" }} className="timeline__event__date">
           3
@@ -73,10 +64,7 @@ export default function HowItWorks() {
 
       <div className="timeline__event animated fadeInUp timeline__event--type1">
         <div className="timeline__event__icon">
-          <img
-            src="https://lh3.googleusercontent.com/nDm0ct32wih4sTGP_d55-f-ezDrWy4OSNPPQ0wU4idBzZ51S3o1ADW0YEo_XF-Tl2tQVwTFND4KymNQ1K4x6YEvqAtzroYUgbw=s0"
-            alt="icon"
-          />
+          <img src="/icon-4.png" alt="Icon" width="80px" />
         </div>
         <div style={{ color: "white" }} className="timeline__event__date">
           4
@@ -96,10 +84,7 @@ export default function HowItWorks() {
 
       <div className="timeline__event animated fadeInUp delay-1s timeline__event--type3">
         <div className="timeline__event__icon">
-          <img
-            src="https://lh3.googleusercontent.com/kb39wVtoCM9qGBoiO09JR5F4q8eM8mE1cNr5biTFdCIe9X7a0FCAkl07SxofzExWK36Q-WHvD1OuwVDYUK5sb801sc9StaEheDY=s0"
-            alt="icon"
-          />
+          <img src="/icon-5.png" alt="Icon" width="80px" />
         </div>
         <div style={{ color: "white" }} className="timeline__event__date">
           5
@@ -109,7 +94,7 @@ export default function HowItWorks() {
             Consultation with an Expert:
           </div>
           <div className="timeline__event__description">
-            <p style={{ padding: "14.5px" }}>
+            <p style={{ padding: "8.1px" }}>
               Schedule a call with a career expert to delve deeper into your
               results and discuss strategies for your management career journey.
             </p>

@@ -390,7 +390,7 @@ const PDFUploader = () => {
                 improvement.
               </p>
             </div>
-            <div className="management-card">
+            <div className="management-card" style={{ paddingBottom: "7.5vh" }}>
               <img src="/14.png" alt="card3" />
               <h3 className="blue-color-text">Simple and Effective:</h3>
               <p>
@@ -539,7 +539,10 @@ const PDFUploader = () => {
 
       <div className="insights-section-main">
         <div className="insights-section">
-          <h2>Ready to Turn Insights into Action?</h2>
+          <h2>
+            Ready to Turn{" "}
+            <span style={{ color: "#0029e4" }}>Insights into Action?</span>
+          </h2>
           <p>
             Completing your profile evaluation is just the beginning. Connect
             with a career advisor to understand your analysis and map out your
